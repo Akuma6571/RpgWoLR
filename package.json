@@ -1,1 +1,12 @@
-
+{
+  "name": "o-mundo",
+  "version": "1.0.0",
+  "description": "Bot de RPG para gerenciamento do mundo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.0.0"
+  }
+}
