@@ -57,7 +57,6 @@ const client = new Client({
 
 client.commands = new Collection();
 
-
 const commandsFolder = path.join(
     __dirname,
     "commands"
@@ -66,14 +65,12 @@ const commandsFolder = path.join(
 
 if (fs.existsSync(commandsFolder)) {
 
-
     const commandFiles = fs
         .readdirSync(commandsFolder)
         .filter(file => file.endsWith(".js"));
 
 
     for (const file of commandFiles) {
-
 
         const command = require(
             `./commands/${file}`
@@ -85,7 +82,6 @@ if (fs.existsSync(commandsFolder)) {
             command
         );
 
-
     }
 
 }
@@ -96,7 +92,6 @@ if (fs.existsSync(commandsFolder)) {
 // ==========================================
 
 client.once("ready", () => {
-
 
     console.log("==============================");
 
@@ -114,7 +109,6 @@ client.once("ready", () => {
 
     console.log("==============================");
 
-
 });
 
 
@@ -126,7 +120,6 @@ client.on(
     "interactionCreate",
     async interaction => {
 
-
         if (!interaction.isChatInputCommand()) {
             return;
         }
@@ -137,10 +130,7 @@ client.on(
         );
 
 
-        // Caso o comando não exista
-
         if (!command) {
-
 
             await interaction.reply({
 
@@ -151,25 +141,19 @@ client.on(
 
             });
 
-
             return;
 
         }
 
 
-
         try {
-
 
             await command.execute(interaction);
 
 
-
         } catch (error) {
 
-
             console.error(error);
-
 
 
             await interaction.reply({
@@ -181,9 +165,7 @@ client.on(
 
             });
 
-
         }
-
 
     }
 
@@ -198,14 +180,11 @@ client.on(
     "error",
     error => {
 
-
         console.error(
             "🌍 Uma falha desconhecida afetou o mundo:"
         );
 
-
         console.error(error);
-
 
     }
 );
@@ -215,6 +194,4 @@ client.on(
 // LOGIN
 // ==========================================
 
-// O token será colocado quando formos testar
-
-client.login("TOKEN_DO_BOT");
+client.login(process.env.TOKEN);
