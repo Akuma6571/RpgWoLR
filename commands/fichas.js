@@ -75,116 +75,33 @@ module.exports = {
             )
 
 
-
             .addFields(
 
                 {
-                    name: "🏷️ Título",
-                    value: player.titulo,
-                    inline: true
-                },
-
-                {
-                    name: "👤 Nome",
-                    value: player.nome,
-                    inline: true
-                },
-
-                {
-                    name: "🧬 Raça",
-                    value: player.raca,
-                    inline: true
-                },
-
-                {
-                    name: "⚔️ Classe",
-                    value: player.classe,
-                    inline: true
-                },
-
-                {
-                    name: "🔮 SubClasse",
-                    value: player.subClasse,
-                    inline: true
-                },
-
-
-
-                {
-                    name: "❤️ Vida",
-                    value: `${player.vida}`,
-                    inline: true
-                },
-
-                {
-                    name: "🛡️ Resistência",
-                    value: `${player.resistencia}`,
-                    inline: true
+                    name: "🏷️ Identidade",
+                    value:
+                    `🏷️ Título: ${player.titulo}\n` +
+                    `👤 Nome: ${player.nome}\n` +
+                    `🧬 Raça: ${player.raca}\n` +
+                    `⚔️ Classe: ${player.classe}\n` +
+                    `🔮 SubClasse: ${player.subClasse}`
                 },
 
 
                 {
-                    name: "💪 Força",
-                    value: `${player.forca}`,
-                    inline: true
-                },
-
-                {
-                    name: "⚡ Agilidade",
-                    value: `${player.agilidade}`,
-                    inline: true
-                },
-
-
-                {
-                    name: "🧗 Estamina",
-                    value: `${player.estamina}`,
-                    inline: true
-                },
-
-                {
-                    name: "🩵 Mana",
-                    value: `${player.mana}`,
-                    inline: true
+                    name: "⚔️ Estatísticas",
+                    value:
+                    `❤️ Vida: ${player.vida}          🛡️ Resistência: ${player.resistencia}\n` +
+                    `💪 Força: ${player.forca}           ⚡ Agilidade: ${player.agilidade}\n` +
+                    `🧗 Estamina: ${player.estamina}       🩵 Mana: ${player.mana}\n` +
+                    `🧠 Inteligência: ${player.inteligencia}   🗣️ Carisma: ${player.carisma}\n` +
+                    `🌌 Aura: ${player.aura}            🍀 Sorte: ${player.sorte}\n` +
+                    `🎯 Chance Crítica: ${player.chanceCritica}%`
                 },
 
 
                 {
-                    name: "🧠 Inteligência",
-                    value: `${player.inteligencia}`,
-                    inline: true
-                },
-
-                {
-                    name: "🗣️ Carisma",
-                    value: `${player.carisma}`,
-                    inline: true
-                },
-
-
-                {
-                    name: "🌌 Aura",
-                    value: `${player.aura}`,
-                    inline: true
-                },
-
-                {
-                    name: "🍀 Sorte",
-                    value: `${player.sorte}`,
-                    inline: true
-                },
-
-
-                {
-                    name: "🎯 Chance Crítica",
-                    value: `${player.chanceCritica}%`,
-                    inline: true
-                },
-
-
-
-                {
-                    name: "Aptidões",
+                    name: "✨ Aptidões",
                     value:
                     `☄️Mágica: ${player.aptidoes.magica}%\n` +
                     `🔥Fogo: ${player.aptidoes.fogo}%\n` +
@@ -197,7 +114,6 @@ module.exports = {
                 },
 
 
-
                 {
                     name: "⚔️ Habilidades",
                     value:
@@ -205,6 +121,7 @@ module.exports = {
                     ? player.habilidades.join(", ")
                     : "Nenhuma"
                 },
+
 
                 {
                     name: "📖 Magias",
@@ -215,17 +132,11 @@ module.exports = {
                 },
 
 
-
                 {
-                    name: "⭐ Nível",
-                    value: `${player.nivel}`,
-                    inline: true
-                },
-
-                {
-                    name: "✨ XP",
-                    value: `${player.xp}`,
-                    inline: true
+                    name: "⭐ Progressão",
+                    value:
+                    `⭐ Nível: ${player.nivel}\n` +
+                    `✨ XP: ${player.xp}`
                 }
 
             );
