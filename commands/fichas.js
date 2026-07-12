@@ -3,14 +3,7 @@ const {
     EmbedBuilder
 } = require("discord.js");
 
-const fs = require("fs");
-const path = require("path");
-
-
-const playersPath = path.join(
-    __dirname,
-    "../data/players.json"
-);
+const db = require("../database/database");
 
 
 module.exports = {
@@ -30,124 +23,188 @@ module.exports = {
         const userId = interaction.user.id;
 
 
-        let players = {};
+
+        db.get(
+
+            "SELECT * FROM jogadores WHERE id = ?",
 
 
-        if (fs.existsSync(playersPath)) {
-
-            players = JSON.parse(
-                fs.readFileSync(playersPath)
-            );
-
-        }
+            [userId],
 
 
-        const player = players[userId];
-
-
-        if (!player) {
-
-            await interaction.reply({
-
-                content:
-                "🌍 O mundo ainda não reconhece sua existência. Use /registrar antes de consultar sua ficha.",
-
-                ephemeral: true
-
-            });
-
-            return;
-
-        }
+            async (err, player) => {
 
 
 
-        const ficha = new EmbedBuilder()
+                if (err) {
 
-            .setTitle(
-                `📜 Ficha de ${player.nome}`
-            )
-
-            .setColor("#8B0000")
-
-            .setDescription(
-                "Registro oficial do mundo."
-            )
+                    console.error(err);
 
 
-            .addFields(
+                    await interaction.reply({
 
-                {
-                    name: "🏷️ Identidade",
-                    value:
-                    `🏷️ Título: ${player.titulo}\n` +
-                    `👤 Nome: ${player.nome}\n` +
-                    `🧬 Raça: ${player.raca}\n` +
-                    `⚔️ Classe: ${player.classe}\n` +
-                    `🔮 SubClasse: ${player.subClasse}`
-                },
+                        content:
+                        "🌍 As leis do mundo falharam ao consultar sua existência.",
+
+                        ephemeral: true
+
+                    });
 
 
-                {
-                    name: "⚔️ Estatísticas",
-                    value:
-                    `❤️ Vida: ${player.vida}          🛡️ Resistência: ${player.resistencia}\n` +
-                    `💪 Força: ${player.forca}           ⚡ Agilidade: ${player.agilidade}\n` +
-                    `🧗 Estamina: ${player.estamina}       🩵 Mana: ${player.mana}\n` +
-                    `🧠 Inteligência: ${player.inteligencia}   🗣️ Carisma: ${player.carisma}\n` +
-                    `🌌 Aura: ${player.aura}            🍀 Sorte: ${player.sorte}\n` +
-                    `🎯 Chance Crítica: ${player.chanceCritica}%`
-                },
+                    return;
 
-
-                {
-                    name: "✨ Aptidões",
-                    value:
-                    `☄️Mágica: ${player.aptidoes.magica}%\n` +
-                    `🔥Fogo: ${player.aptidoes.fogo}%\n` +
-                    `🪨Terra: ${player.aptidoes.terra}%\n` +
-                    `🌪️Ar: ${player.aptidoes.ar}%\n` +
-                    `🌊Água: ${player.aptidoes.agua}%\n` +
-                    `✨Luz: ${player.aptidoes.luz}%\n` +
-                    `⚫Escuridão: ${player.aptidoes.escuridao}%\n` +
-                    `🃏Secundárias: ${player.aptidoes.secundarias}%`
-                },
-
-
-                {
-                    name: "⚔️ Habilidades",
-                    value:
-                    player.habilidades.length > 0
-                    ? player.habilidades.join(", ")
-                    : "Nenhuma"
-                },
-
-
-                {
-                    name: "📖 Magias",
-                    value:
-                    player.magias.length > 0
-                    ? player.magias.join(", ")
-                    : "Nenhuma"
-                },
-
-
-                {
-                    name: "⭐ Progressão",
-                    value:
-                    `⭐ Nível: ${player.nivel}\n` +
-                    `✨ XP: ${player.xp}`
                 }
 
-            );
+
+
+                if (!player) {
+
+
+                    await interaction.reply({
+
+                        content:
+                        "🌍 O mundo ainda não reconhece sua existência. Use /registrar antes de consultar sua ficha.",
+
+                        ephemeral: true
+
+                    });
+
+
+                    return;
+
+                }
 
 
 
-        await interaction.reply({
+                const ficha = new EmbedBuilder()
 
-            embeds: [ficha]
 
-        });
+
+                    .setTitle(
+                        `📜 Ficha de ${player.nome}`
+                    )
+
+
+                    .setColor("#8B0000")
+
+
+                    .setDescription(
+                        "Registro oficial do mundo."
+                    )
+
+
+
+                    .addFields(
+
+
+                        {
+
+                            name: "🏷️ Identidade",
+
+                            value:
+
+                            `🏷️ Título: ${player.titulo}\n` +
+                            `👤 Nome: ${player.nome}\n` +
+                            `🧬 Raça: ${player.raca}\n` +
+                            `⚔️ Classe: ${player.classe}\n` +
+                            `🔮 SubClasse: ${player.subClasse}`
+
+                        },
+
+
+
+                        {
+
+                            name: "⚔️ Estatísticas",
+
+                            value:
+
+                            `❤️ Vida: ${player.vida}          🛡️ Resistência: ${player.resistencia}\n` +
+                            `💪 Força: ${player.forca}           ⚡ Agilidade: ${player.agilidade}\n` +
+                            `🧗 Estamina: ${player.estamina}       🩵 Mana: ${player.mana}\n` +
+                            `🧠 Inteligência: ${player.inteligencia}   🗣️ Carisma: ${player.carisma}\n` +
+                            `🌌 Aura: ${player.aura}            🍀 Sorte: ${player.sorte}\n` +
+                            `🎯 Chance Crítica: ${player.chanceCritica}%`
+
+                        },
+
+
+
+                        {
+
+                            name: "✨ Aptidões",
+
+                            value:
+
+                            `☄️Mágica: ${player.magica}%\n` +
+                            `🔥Fogo: ${player.fogo}%\n` +
+                            `🪨Terra: ${player.terra}%\n` +
+                            `🌪️Ar: ${player.ar}%\n` +
+                            `🌊Água: ${player.agua}%\n` +
+                            `✨Luz: ${player.luz}%\n` +
+                            `⚫Escuridão: ${player.escuridao}%\n` +
+                            `🃏Secundárias: ${player.secundarias}%`
+
+                        },
+
+
+
+                        {
+
+                            name: "⚔️ Habilidades",
+
+                            value:
+
+                            player.habilidades !== "[]"
+                            ? player.habilidades
+                            : "Nenhuma"
+
+                        },
+
+
+
+                        {
+
+                            name: "📖 Magias",
+
+                            value:
+
+                            player.magias !== "[]"
+                            ? player.magias
+                            : "Nenhuma"
+
+                        },
+
+
+
+                        {
+
+                            name: "⭐ Progressão",
+
+                            value:
+
+                            `⭐ Nível: ${player.nivel}\n` +
+                            `✨ XP: ${player.xp}`
+
+                        }
+
+
+                    );
+
+
+
+                await interaction.reply({
+
+                    embeds: [ficha]
+
+                });
+
+
+
+            }
+
+        );
+
 
 
     }
