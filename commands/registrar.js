@@ -2,7 +2,7 @@ const {
     SlashCommandBuilder
 } = require("discord.js");
 
-const db = require("../database/database");
+const db = require("../Database/database");
 
 
 module.exports = {
