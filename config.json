@@ -1,6 +1,7 @@
 {
     "botName": "O mundo",
-    "ownerId": "SEU_ID_AQUI",
+    "version": "1.0.0",
     "prefix": "/",
-    "version": "1.0.0"
+    "ownerId": "806138859053121546",
+    "developerMode": true
 }
