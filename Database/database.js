@@ -1,39 +1,55 @@
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
+const { Pool } = require("pg");
 
 
-const dbPath = path.join(
-    __dirname,
-    "mundo.sqlite"
-);
+// Conexão com o PostgreSQL
+
+const pool = new Pool({
+
+    connectionString: process.env.DATABASE_URL,
+
+    ssl: {
+        rejectUnauthorized: false
+    }
+
+});
 
 
-const db = new sqlite3.Database(
-    dbPath,
-    (err) => {
+// Teste de conexão
 
-        if (err) {
+pool.connect()
 
-            console.error(
-                "❌ Erro ao conectar ao banco:",
-                err
-            );
-
-            return;
-
-        }
-
+    .then(client => {
 
         console.log(
-            "🌍 Banco de dados conectado."
+            "🌍 Banco PostgreSQL conectado."
         );
 
-    }
-);
+        client.release();
+
+
+        criarTabela();
+
+    })
+
+
+    .catch(error => {
+
+        console.error(
+            "❌ Erro ao conectar ao PostgreSQL:",
+            error
+        );
+
+    });
 
 
 
-db.run(`
+
+// Criar tabela de jogadores
+
+async function criarTabela() {
+
+
+    const query = `
 
     CREATE TABLE IF NOT EXISTS jogadores (
 
@@ -52,7 +68,7 @@ db.run(`
 
         classe TEXT DEFAULT 'Não definida',
 
-        subClasse TEXT DEFAULT 'Não definida',
+        subclasse TEXT DEFAULT 'Não definida',
 
 
 
@@ -76,7 +92,7 @@ db.run(`
 
         sorte INTEGER DEFAULT 10,
 
-        chanceCritica INTEGER DEFAULT 5,
+        chancecritica INTEGER DEFAULT 5,
 
 
 
@@ -98,9 +114,9 @@ db.run(`
 
 
 
-        habilidades TEXT DEFAULT '[]',
+        habilidades TEXT DEFAULT 'Nenhuma',
 
-        magias TEXT DEFAULT '[]',
+        magias TEXT DEFAULT 'Nenhuma',
 
 
 
@@ -108,10 +124,35 @@ db.run(`
 
         xp INTEGER DEFAULT 0
 
-    )
+    );
 
-`);
+    `;
+
+
+    try {
+
+        await pool.query(query);
+
+
+        console.log(
+            "🌍 Tabela de jogadores pronta."
+        );
+
+
+    } catch(error) {
+
+
+        console.error(
+            "❌ Erro ao criar tabela:",
+            error
+        );
+
+
+    }
+
+
+}
 
 
 
-module.exports = db;
+module.exports = pool;
