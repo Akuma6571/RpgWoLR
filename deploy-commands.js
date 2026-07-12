@@ -15,7 +15,7 @@ for (const file of commandFiles) {
 
 const rest = new REST({
     version: "10"
-}).setToken("TOKEN_DO_BOT");
+}).setToken("MTUyNTY3MTYyNjMyMTAzOTQ3Mg.Gm384C.6xuUPavRSG0LdCNnM23ySisweQHDdg_meN0FQQ");
 
 (async () => {
     try {
