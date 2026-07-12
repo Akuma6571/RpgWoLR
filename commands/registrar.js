@@ -2,14 +2,7 @@ const {
     SlashCommandBuilder
 } = require("discord.js");
 
-const fs = require("fs");
-const path = require("path");
-
-
-const playersPath = path.join(
-    __dirname,
-    "../data/players.json"
-);
+const db = require("../database/database");
 
 
 module.exports = {
@@ -31,140 +24,123 @@ module.exports = {
         const username = interaction.user.username;
 
 
-        let players = {};
 
+        db.get(
 
-        if (fs.existsSync(playersPath)) {
+            "SELECT id FROM jogadores WHERE id = ?",
 
-            players = JSON.parse(
-                fs.readFileSync(playersPath)
-            );
+            [userId],
 
-        }
+            async (err, row) => {
 
 
+                if (err) {
 
-        if (players[userId]) {
+                    console.error(err);
 
+                    await interaction.reply({
 
-            await interaction.reply({
+                        content:
+                        "🌍 As leis do mundo falharam ao tentar reconhecer sua existência.",
 
-                content:
-                "🌍 O mundo já reconhece sua existência. Sua ficha já foi criada.",
+                        ephemeral: true
 
-                ephemeral: true
+                    });
 
-            });
+                    return;
 
+                }
 
-            return;
 
-        }
 
+                if (row) {
 
 
-        players[userId] = {
+                    await interaction.reply({
 
+                        content:
+                        "🌍 O mundo já reconhece sua existência. Sua ficha já foi criada.",
 
-            titulo: "Sem título",
+                        ephemeral: true
 
-            nome: username,
+                    });
 
-            idade: 0,
 
-            altura: 0,
+                    return;
 
+                }
 
-            raca: "Não definida",
 
-            classe: "Não definida",
 
-            subClasse: "Não definida",
+                db.run(
 
+                    `
 
+                    INSERT INTO jogadores
 
-            vida: 100,
+                    (
 
-            resistencia: 10,
+                    id,
+                    nome
 
-            forca: 10,
+                    )
 
-            agilidade: 10,
+                    VALUES
 
-            estamina: 10,
+                    (?,?)
 
-            mana: 10,
+                    `,
 
-            inteligencia: 10,
+                    [
 
-            carisma: 10,
+                    userId,
+                    username
 
-            aura: 10,
+                    ],
 
-            sorte: 10,
 
-            chanceCritica: 5,
+                    async (err) => {
 
 
+                        if (err) {
 
-            aptidoes: {
+                            console.error(err);
 
-                magica: 0,
 
-                fogo: 0,
+                            await interaction.reply({
 
-                terra: 0,
+                                content:
+                                "🌍 As leis do mundo foram perturbadas. Sua ficha não pôde ser criada.",
 
-                ar: 0,
+                                ephemeral: true
 
-                agua: 0,
+                            });
 
-                luz: 0,
 
-                escuridao: 0,
+                            return;
 
-                secundarias: 0
+                        }
 
-            },
 
 
+                        await interaction.reply({
 
-            habilidades: [],
+                            content:
+                            "🌍 O mundo reconheceu sua presença. Sua jornada começa agora.",
 
-            magias: [],
+                            ephemeral: true
 
+                        });
 
 
-            nivel: 1,
+                    }
 
-            xp: 0
+                );
 
-        };
 
-
-
-        fs.writeFileSync(
-
-            playersPath,
-
-            JSON.stringify(
-                players,
-                null,
-                4
-            )
+            }
 
         );
-
-
-
-        await interaction.reply({
-
-            content:
-            "🌍 O mundo reconheceu sua presença. Sua jornada começa agora.",
-
-            ephemeral: true
-
-        });
 
 
     }
