@@ -7,8 +7,6 @@ const fs = require("fs");
 const path = require("path");
 
 
-// Local do arquivo de jogadores
-
 const playersPath = path.join(
     __dirname,
     "../data/players.json"
@@ -44,13 +42,10 @@ module.exports = {
         }
 
 
-
         const player = players[userId];
 
 
-
         if (!player) {
-
 
             await interaction.reply({
 
@@ -60,7 +55,6 @@ module.exports = {
                 ephemeral: true
 
             });
-
 
             return;
 
@@ -74,9 +68,13 @@ module.exports = {
                 `📜 Ficha de ${player.nome}`
             )
 
+            .setColor("#8B0000")
+
             .setDescription(
-                "🌍 Registro oficial do mundo."
+                "Registro oficial do mundo."
             )
+
+
 
             .addFields(
 
@@ -89,18 +87,6 @@ module.exports = {
                 {
                     name: "👤 Nome",
                     value: player.nome,
-                    inline: true
-                },
-
-                {
-                    name: "🎂 Idade",
-                    value: `${player.idade}`,
-                    inline: true
-                },
-
-                {
-                    name: "📏 Altura",
-                    value: `${player.altura}`,
                     inline: true
                 },
 
@@ -122,13 +108,102 @@ module.exports = {
                     inline: true
                 },
 
+
+
                 {
-                    name: "✨ Habilidades",
+                    name: "❤️ Vida",
+                    value: `${player.vida}`,
+                    inline: true
+                },
+
+                {
+                    name: "🛡️ Resistência",
+                    value: `${player.resistencia}`,
+                    inline: true
+                },
+
+
+                {
+                    name: "💪 Força",
+                    value: `${player.forca}`,
+                    inline: true
+                },
+
+                {
+                    name: "⚡ Agilidade",
+                    value: `${player.agilidade}`,
+                    inline: true
+                },
+
+
+                {
+                    name: "🧗 Estamina",
+                    value: `${player.estamina}`,
+                    inline: true
+                },
+
+                {
+                    name: "🩵 Mana",
+                    value: `${player.mana}`,
+                    inline: true
+                },
+
+
+                {
+                    name: "🧠 Inteligência",
+                    value: `${player.inteligencia}`,
+                    inline: true
+                },
+
+                {
+                    name: "🗣️ Carisma",
+                    value: `${player.carisma}`,
+                    inline: true
+                },
+
+
+                {
+                    name: "🌌 Aura",
+                    value: `${player.aura}`,
+                    inline: true
+                },
+
+                {
+                    name: "🍀 Sorte",
+                    value: `${player.sorte}`,
+                    inline: true
+                },
+
+
+                {
+                    name: "🎯 Chance Crítica",
+                    value: `${player.chanceCritica}%`,
+                    inline: true
+                },
+
+
+
+                {
+                    name: "Aptidões",
+                    value:
+                    `☄️Mágica: ${player.aptidoes.magica}%\n` +
+                    `🔥Fogo: ${player.aptidoes.fogo}%\n` +
+                    `🪨Terra: ${player.aptidoes.terra}%\n` +
+                    `🌪️Ar: ${player.aptidoes.ar}%\n` +
+                    `🌊Água: ${player.aptidoes.agua}%\n` +
+                    `✨Luz: ${player.aptidoes.luz}%\n` +
+                    `⚫Escuridão: ${player.aptidoes.escuridao}%\n` +
+                    `🃏Secundárias: ${player.aptidoes.secundarias}%`
+                },
+
+
+
+                {
+                    name: "⚔️ Habilidades",
                     value:
                     player.habilidades.length > 0
                     ? player.habilidades.join(", ")
-                    : "Nenhuma",
-                    inline: false
+                    : "Nenhuma"
                 },
 
                 {
@@ -136,9 +211,10 @@ module.exports = {
                     value:
                     player.magias.length > 0
                     ? player.magias.join(", ")
-                    : "Nenhuma",
-                    inline: false
+                    : "Nenhuma"
                 },
+
+
 
                 {
                     name: "⭐ Nível",
@@ -153,6 +229,7 @@ module.exports = {
                 }
 
             );
+
 
 
         await interaction.reply({
