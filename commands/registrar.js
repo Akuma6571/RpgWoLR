@@ -6,8 +6,6 @@ const fs = require("fs");
 const path = require("path");
 
 
-// Local do arquivo de jogadores
-
 const playersPath = path.join(
     __dirname,
     "../data/players.json"
@@ -46,8 +44,6 @@ module.exports = {
 
 
 
-        // Verifica se já existe
-
         if (players[userId]) {
 
 
@@ -67,9 +63,8 @@ module.exports = {
 
 
 
-        // Criação da ficha inicial
-
         players[userId] = {
+
 
             titulo: "Sem título",
 
@@ -79,6 +74,7 @@ module.exports = {
 
             altura: 0,
 
+
             raca: "Não definida",
 
             classe: "Não definida",
@@ -86,9 +82,57 @@ module.exports = {
             subClasse: "Não definida",
 
 
+
+            vida: 100,
+
+            resistencia: 10,
+
+            forca: 10,
+
+            agilidade: 10,
+
+            estamina: 10,
+
+            mana: 10,
+
+            inteligencia: 10,
+
+            carisma: 10,
+
+            aura: 10,
+
+            sorte: 10,
+
+            chanceCritica: 5,
+
+
+
+            aptidoes: {
+
+                magica: 0,
+
+                fogo: 0,
+
+                terra: 0,
+
+                ar: 0,
+
+                agua: 0,
+
+                luz: 0,
+
+                escuridao: 0,
+
+                secundarias: 0
+
+            },
+
+
+
             habilidades: [],
 
             magias: [],
+
 
 
             nivel: 1,
@@ -116,7 +160,7 @@ module.exports = {
         await interaction.reply({
 
             content:
-            "🌍 O mundo reconheceu sua presença. Sua ficha foi criada e sua jornada começa agora.",
+            "🌍 O mundo reconheceu sua presença. Sua jornada começa agora.",
 
             ephemeral: true
 
