@@ -13,8 +13,6 @@ const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const config = require("./config.json");
-
-
 //Banco de dados
 require("./database/database");
 
