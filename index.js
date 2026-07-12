@@ -1,23 +1,47 @@
-// =====================================
-// O MUNDO - Discord RPG Bot
-// Arquivo principal
-// =====================================
+// ==========================================
+// 🌍 O MUNDO - Discord RPG Bot
+// Arquivo principal do bot
+// ==========================================
 
-// Importa a biblioteca do Discord
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, Collection } = require("discord.js");
+const config = require("./config.json");
 
-// Cria o bot
+// Criação do cliente do Discord
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds
     ]
 });
 
-// Quando o bot ligar
+// Coleção onde os comandos serão armazenados
+client.commands = new Collection();
+
+
+// ==========================================
+// EVENTO: BOT ONLINE
+// ==========================================
+
 client.once("ready", () => {
-    console.log(`🌍 O mundo está online como ${client.user.tag}`);
+    console.log("----------------------------------");
+    console.log(`🌍 ${config.botName} está online!`);
+    console.log(`🤖 Conta: ${client.user.tag}`);
+    console.log("----------------------------------");
 });
 
-// Login do bot
-// O token será colocado depois de forma segura
-client.login("SEU_TOKEN_AQUI");
+
+// ==========================================
+// TRATAMENTO DE ERROS
+// ==========================================
+
+client.on("error", (error) => {
+    console.log("❌ Erro no bot:");
+    console.log(error);
+});
+
+
+// ==========================================
+// LOGIN DO BOT
+// ==========================================
+
+// O token será colocado quando formos testar
+client.login("TOKEN_DO_BOT");
