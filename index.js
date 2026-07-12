@@ -1,12 +1,12 @@
 // ==========================================
 // 🌍 O MUNDO - Discord RPG Bot
-// Arquivo principal do bot
+// Arquivo principal
 // ==========================================
 
-const { 
-    Client, 
-    GatewayIntentBits, 
-    Collection 
+const {
+    Client,
+    GatewayIntentBits,
+    Collection
 } = require("discord.js");
 
 const fs = require("fs");
@@ -15,13 +15,39 @@ const config = require("./config.json");
 
 
 // ==========================================
+// MENSAGENS DO MUNDO
+// ==========================================
+
+const mensagens = {
+
+    despertar:
+    "🌍 O mundo despertou.",
+
+    semPermissao:
+    "🌍 O mundo observa sua tentativa, mas este caminho não lhe foi concedido.",
+
+    comandoDesconhecido:
+    "🌍 Nem mesmo o próprio mundo parece reconhecer o que está sendo dito... reveja seus conceitos.",
+
+    erro:
+    "🌍 As leis do mundo foram perturbadas. Algo que deveria acontecer não aconteceu.",
+
+    sucesso:
+    "🌍 O mundo reconhece sua intenção e responde ao seu chamado."
+
+};
+
+
+// ==========================================
 // CRIAÇÃO DO BOT
 // ==========================================
 
 const client = new Client({
+
     intents: [
         GatewayIntentBits.Guilds
     ]
+
 });
 
 
@@ -31,23 +57,37 @@ const client = new Client({
 
 client.commands = new Collection();
 
-const commandsPath = path.join(__dirname, "commands");
 
-if (fs.existsSync(commandsPath)) {
+const commandsFolder = path.join(
+    __dirname,
+    "commands"
+);
+
+
+if (fs.existsSync(commandsFolder)) {
+
 
     const commandFiles = fs
-        .readdirSync(commandsPath)
+        .readdirSync(commandsFolder)
         .filter(file => file.endsWith(".js"));
+
 
     for (const file of commandFiles) {
 
-        const command = require(`./commands/${file}`);
+
+        const command = require(
+            `./commands/${file}`
+        );
+
 
         client.commands.set(
             command.data.name,
             command
         );
+
+
     }
+
 }
 
 
@@ -57,56 +97,118 @@ if (fs.existsSync(commandsPath)) {
 
 client.once("ready", () => {
 
-    console.log("----------------------------------");
-    console.log(`🌍 ${config.botName} está online!`);
-    console.log(`🤖 Conta: ${client.user.tag}`);
-    console.log("----------------------------------");
+
+    console.log("==============================");
+
+    console.log(
+        mensagens.despertar
+    );
+
+    console.log(
+        `🌍 Nome: ${config.botName}`
+    );
+
+    console.log(
+        `🤖 Conta: ${client.user.tag}`
+    );
+
+    console.log("==============================");
+
 
 });
 
 
 // ==========================================
-// EXECUTAR COMANDOS
+// EXECUÇÃO DOS COMANDOS
 // ==========================================
 
-client.on("interactionCreate", async interaction => {
+client.on(
+    "interactionCreate",
+    async interaction => {
 
-    if (!interaction.isChatInputCommand()) return;
 
-    const command = client.commands.get(
-        interaction.commandName
-    );
+        if (!interaction.isChatInputCommand()) {
+            return;
+        }
 
-    if (!command) return;
 
-    try {
+        const command = client.commands.get(
+            interaction.commandName
+        );
 
-        await command.execute(interaction);
 
-    } catch (error) {
+        // Caso o comando não exista
 
-        console.log(error);
+        if (!command) {
 
-        await interaction.reply({
-            content: "❌ Ocorreu um erro ao executar esse comando.",
-            ephemeral: true
-        });
+
+            await interaction.reply({
+
+                content:
+                mensagens.comandoDesconhecido,
+
+                ephemeral: true
+
+            });
+
+
+            return;
+
+        }
+
+
+
+        try {
+
+
+            await command.execute(interaction);
+
+
+
+        } catch (error) {
+
+
+            console.error(error);
+
+
+
+            await interaction.reply({
+
+                content:
+                mensagens.erro,
+
+                ephemeral: true
+
+            });
+
+
+        }
+
 
     }
 
-});
+);
 
 
 // ==========================================
-// ERROS
+// SISTEMA DE ERROS GERAIS
 // ==========================================
 
-client.on("error", error => {
+client.on(
+    "error",
+    error => {
 
-    console.log("Erro no bot:");
-    console.log(error);
 
-});
+        console.error(
+            "🌍 Uma falha desconhecida afetou o mundo:"
+        );
+
+
+        console.error(error);
+
+
+    }
+);
 
 
 // ==========================================
@@ -114,4 +216,5 @@ client.on("error", error => {
 // ==========================================
 
 // O token será colocado quando formos testar
+
 client.login("TOKEN_DO_BOT");
