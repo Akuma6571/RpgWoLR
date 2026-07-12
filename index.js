@@ -11,7 +11,26 @@ const {
 
 const fs = require("fs");
 const path = require("path");
+const http = require("http");
 const config = require("./config.json");
+
+
+// ==========================================
+// SERVIDOR PARA O RENDER
+// ==========================================
+
+const PORT = process.env.PORT || 3000;
+
+http.createServer((req, res) => {
+
+    res.writeHead(200);
+    res.end("🌍 O mundo está vivo.");
+
+}).listen(PORT, () => {
+
+    console.log(`🌍 Servidor de verificação ativo na porta ${PORT}`);
+
+});
 
 
 // ==========================================
@@ -173,7 +192,7 @@ client.on(
 
 
 // ==========================================
-// SISTEMA DE ERROS GERAIS
+// ERROS
 // ==========================================
 
 client.on(
