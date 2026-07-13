@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 
 
-// Conexão com o PostgreSQL
+// Conexão com PostgreSQL
 
 const pool = new Pool({
 
@@ -12,6 +12,7 @@ const pool = new Pool({
     }
 
 });
+
 
 
 // Teste de conexão
@@ -40,6 +41,7 @@ pool.connect()
         );
 
     });
+
 
 
 
@@ -122,7 +124,9 @@ async function criarTabela() {
 
         nivel INTEGER DEFAULT 1,
 
-        xp INTEGER DEFAULT 0
+        xp INTEGER DEFAULT 0,
+
+        mensagem_ficha TEXT
 
     );
 
@@ -131,12 +135,16 @@ async function criarTabela() {
 
     try {
 
+
         await pool.query(query);
 
 
         console.log(
             "🌍 Tabela de jogadores pronta."
         );
+
+
+        atualizarTabela();
 
 
     } catch(error) {
@@ -152,6 +160,50 @@ async function criarTabela() {
 
 
 }
+
+
+
+
+
+// Atualizações futuras da tabela
+
+async function atualizarTabela() {
+
+
+    try {
+
+
+        await pool.query(`
+
+            ALTER TABLE jogadores
+
+            ADD COLUMN IF NOT EXISTS mensagem_ficha TEXT
+
+        `);
+
+
+
+        console.log(
+            "🌍 Estrutura da ficha atualizada."
+        );
+
+
+
+    } catch(error) {
+
+
+        console.error(
+            "❌ Erro ao atualizar tabela:",
+            error
+        );
+
+
+    }
+
+
+}
+
+
 
 
 
