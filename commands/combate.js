@@ -1,6 +1,7 @@
 // ==========================================
 // 🌍 O MUNDO BOT V2
 // SISTEMA DEFINITIVO DE COMBATE
+// PREPARADO PARA MEMÓRIA E SISTEMAS FUTUROS
 // ==========================================
 
 
@@ -14,7 +15,62 @@ const {
 
 
 
-const database = require("../database/database");
+
+// Sistemas futuros
+// Serão ativados quando forem criados
+
+
+let mundo = null;
+
+let memoria = null;
+
+let eventos = null;
+
+
+
+try {
+
+
+    mundo = require("../systems/mundo/mundo");
+
+
+} catch(e){}
+
+
+
+
+try {
+
+
+    memoria = require("../systems/memoria/memoria");
+
+
+} catch(e){}
+
+
+
+
+try {
+
+
+    eventos = require("../systems/eventos/eventos");
+
+
+} catch(e){}
+
+
+
+
+
+
+
+
+// ==========================================
+// COMBATES ATIVOS
+// ==========================================
+
+
+let combatesAtivos = {};
 
 
 
@@ -25,11 +81,47 @@ const database = require("../database/database");
 
 
 // ==========================================
-// COMBATE ATUAL
+// REGISTRAR EVENTO DO MUNDO
 // ==========================================
 
 
-let combateAtual = {};
+async function registrarEvento(tipo, dados){
+
+
+    try{
+
+
+        if(eventos && eventos.registrar){
+
+
+            await eventos.registrar(
+
+                tipo,
+
+                dados
+
+            );
+
+
+        }
+
+
+    }catch(erro){
+
+
+        console.error(
+
+            "Erro ao registrar evento:",
+
+            erro
+
+        );
+
+
+    }
+
+
+}
 
 
 
@@ -39,6 +131,51 @@ let combateAtual = {};
 
 
 
+// ==========================================
+// CHAMAR O MUNDO
+// ==========================================
+
+
+async function chamarMundo(tipo, dados){
+
+
+    try{
+
+
+        if(mundo && mundo.comentar){
+
+
+            return await mundo.comentar(
+
+                tipo,
+
+                dados
+
+            );
+
+
+        }
+
+
+    }catch(erro){
+
+
+        console.error(
+
+            "Erro no Mundo:",
+
+            erro
+
+        );
+
+
+    }
+
+
+    return null;
+
+
+}
 // ==========================================
 // COMANDO COMBATE
 // ==========================================
@@ -68,6 +205,11 @@ data: new SlashCommandBuilder()
 
 
 
+// ==========================================
+// INICIAR COMBATE
+// ==========================================
+
+
 .addSubcommand(sub =>
 
 
@@ -81,6 +223,7 @@ sub
     "Inicia um combate."
 
 )
+
 
 
 .addStringOption(option =>
@@ -130,6 +273,11 @@ option
 
 
 
+// ==========================================
+// FINALIZAR COMBATE
+// ==========================================
+
+
 .addSubcommand(sub =>
 
 
@@ -160,6 +308,7 @@ option
 )
 
 .setRequired(true)
+
 
 
 .addChoices(
@@ -198,6 +347,7 @@ value:"fuga"
 
 )
 
+
 )
 
 
@@ -211,7 +361,7 @@ option
 
 .setDescription(
 
-    "Alvo derrotado ou enfrentado."
+    "Alvo do combate."
 
 )
 
@@ -219,8 +369,6 @@ option
 
 
 )
-
-
 
 
 
@@ -233,7 +381,7 @@ option
 
 .setDescription(
 
-    "Quantidade de XP entregue."
+    "XP entregue."
 
 )
 
@@ -252,16 +400,64 @@ option
 
 
 
+
+
+// ==========================================
+// EXECUÇÃO
+// ==========================================
+
+
 async execute(interaction){
 
 
-const sub = interaction.options.getSubcommand();
-    // ==========================================
-    // INICIAR COMBATE
-    // ==========================================
+
+    const sub = interaction.options.getSubcommand();
+
+
+
+    const servidor = interaction.guild.id;
+
+
+
+
+
+
+
+
+
+// ==========================================
+// INICIAR
+// ==========================================
 
 
     if(sub === "iniciar"){
+
+
+
+        if(combatesAtivos[servidor]){
+
+
+
+            return interaction.reply({
+
+
+                content:
+
+                "❌ Já existe um combate ativo neste mundo.",
+
+
+                ephemeral:true
+
+
+            });
+
+
+        }
+
+
+
+
+
 
 
 
@@ -286,8 +482,11 @@ const sub = interaction.options.getSubcommand();
 
 
 
-        combateAtual[interaction.guild.id] = {
+        const combate = {
 
+
+
+            servidor,
 
 
             criatura,
@@ -304,6 +503,45 @@ const sub = interaction.options.getSubcommand();
 
 
         };
+
+
+
+
+
+
+
+
+        combatesAtivos[servidor] = combate;
+
+
+
+
+
+
+
+
+        await registrarEvento(
+
+            "combate_iniciado",
+
+            combate
+
+        );
+
+
+
+
+
+
+
+
+        await chamarMundo(
+
+            "combate_iniciado",
+
+            combate
+
+        );
 
 
 
@@ -390,12 +628,52 @@ O destino aguarda o desfecho.
 
 
 
-    // ==========================================
-    // FINALIZAR COMBATE
-    // ==========================================
+// ==========================================
+// FINALIZAR
+// ==========================================
 
 
     if(sub === "finalizar"){
+
+
+
+        const combate = combatesAtivos[servidor];
+
+
+
+
+
+
+
+
+        if(!combate){
+
+
+
+            return interaction.reply({
+
+
+
+                content:
+
+                "❌ Não existe combate ativo neste mundo.",
+
+
+
+                ephemeral:true
+
+
+
+            });
+
+
+
+        }
+
+
+
+
+
 
 
 
@@ -420,6 +698,35 @@ O destino aguarda o desfecho.
             "xp"
 
         );
+// ==========================================
+// FINALIZAÇÃO DO COMBATE
+// ==========================================
+
+
+        const resultadoCombate = {
+
+
+
+            ...combate,
+
+
+            resultado,
+
+
+            alvo,
+
+
+            xp,
+
+
+            finalizadoPor: interaction.user.id,
+
+
+            fim: Date.now()
+
+
+
+        };
 
 
 
@@ -428,7 +735,13 @@ O destino aguarda o desfecho.
 
 
 
-        const combate = combateAtual[interaction.guild.id];
+        await registrarEvento(
+
+            "combate_finalizado",
+
+            resultadoCombate
+
+        );
 
 
 
@@ -437,11 +750,13 @@ O destino aguarda o desfecho.
 
 
 
-        const criatura = combate ? combate.criatura : alvo;
+        const respostaMundo = await chamarMundo(
 
+            "combate_finalizado",
 
+            resultadoCombate
 
-        const raridade = combate ? combate.raridade : "desconhecida";
+        );
 
 
 
@@ -469,14 +784,15 @@ O destino aguarda o desfecho.
 🌍 **O Mundo testemunhou o confronto.**
 
 
-👹 **Alvo:**
+👹 **Criatura:**
 
-${criatura}
+${combate.criatura}
+
 
 
 ✨ **Raridade:**
 
-${raridade}
+${combate.raridade}
 
 
 
@@ -491,10 +807,11 @@ ${resultado}
 ${xp} XP
 
 
+
 ━━━━━━━━━━━━━━━━━━
 
 
-O registro desta batalha foi marcado.
+${respostaMundo || "O registro desta batalha foi marcado."}
 
 `
 
@@ -511,7 +828,7 @@ O registro desta batalha foi marcado.
 
 
 
-        delete combateAtual[interaction.guild.id];
+        delete combatesAtivos[servidor];
 
 
 
@@ -542,10 +859,31 @@ O registro desta batalha foi marcado.
 
 }
 
+
+
+
+
 };
+
+
+
+
+
+
+
+
+
 // ==========================================
-// FUNÇÕES EXPORTADAS
+// EXPORTAÇÕES FUTURAS
 // ==========================================
 
 
-module.exports.combateAtual = combateAtual;
+module.exports.combatesAtivos = combatesAtivos;
+
+
+
+module.exports.registrarEvento = registrarEvento;
+
+
+
+module.exports.chamarMundo = chamarMundo;
