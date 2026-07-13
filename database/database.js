@@ -793,3 +793,216 @@ await pool.query(query);
 
 
 }
+
+async function criarTabelaLimites(){
+
+
+const query = `
+
+
+CREATE TABLE IF NOT EXISTS limites_atributos (
+
+
+id SERIAL PRIMARY KEY,
+
+
+vida BIGINT DEFAULT 1000000000000,
+
+
+forca BIGINT DEFAULT 950000000000,
+
+
+agilidade BIGINT DEFAULT 800000000000,
+
+
+estamina BIGINT DEFAULT 1000000000000,
+
+
+mana BIGINT DEFAULT 1000000000000,
+
+
+inteligencia BIGINT DEFAULT 1500000000,
+
+
+carisma BIGINT DEFAULT 1000000,
+
+
+aura BIGINT DEFAULT 500000000000,
+
+
+sorte BIGINT DEFAULT 1000,
+
+
+chancecritica NUMERIC DEFAULT 150
+
+
+);
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function executar(query, valores=[]){
+
+
+
+return await pool.query(
+
+query,
+
+valores
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function buscarUm(query, valores=[]){
+
+
+
+const resultado = await pool.query(
+
+query,
+
+valores
+
+);
+
+
+
+return resultado.rows[0];
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function buscarTodos(query, valores=[]){
+
+
+
+const resultado = await pool.query(
+
+query,
+
+valores
+
+);
+
+
+
+return resultado.rows;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function inserirLimites(){
+
+
+
+const existe = await buscarUm(
+
+`
+
+SELECT *
+
+FROM limites_atributos
+
+LIMIT 1
+
+`
+
+);
+
+
+
+if(!existe){
+
+
+
+await executar(
+
+`
+
+INSERT INTO limites_atributos
+
+DEFAULT VALUES
+
+`
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+module.exports = {
+
+
+pool,
+
+
+executar,
+
+
+buscarUm,
+
+
+buscarTodos
+
+
+
+};
