@@ -91,7 +91,9 @@ await criarTabelaEvolucoes();
 
 await criarTabelaSlots();
 
+await criarTabelaLimites();
 
+await inserirLimites();
 
 
 
