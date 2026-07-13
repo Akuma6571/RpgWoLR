@@ -227,6 +227,35 @@ quebra_expectativa: [
 
 
 
+doma: [
+
+"Curioso... uma criatura que deveria ser selvagem agora escolheu seguir você.",
+
+"Dominar uma existência não significa possuir sua vontade.",
+
+"Poucos conseguem convencer monstros a abandonar sua natureza.",
+
+"Eu observei incontáveis criaturas. Algumas delas jamais aceitaram um mestre.",
+
+"Interessante... você não destruiu a criatura. Você mudou o destino dela."
+
+],
+
+
+subjugacao: [
+
+"A força pode obrigar uma criatura a obedecer, mas não garante lealdade.",
+
+"Você venceu o corpo dela. Agora descubra se venceu sua vontade.",
+
+"Existem correntes invisíveis mais fortes que qualquer prisão.",
+
+"Algumas criaturas esperam uma oportunidade para quebrar seus grilhões.",
+
+"Subjugar uma fera é fácil. Conquistar seu respeito é outra coisa."
+
+],
+
 };
 
 
