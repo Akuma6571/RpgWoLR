@@ -27,7 +27,7 @@ const DONO_ID = "806138859053121546";
 
 
 // ==========================================
-// SISTEMAS FUTUROS
+// SISTEMAS DO MUNDO
 // ==========================================
 
 
@@ -67,7 +67,7 @@ try {
 
 
 // ==========================================
-// FUNÇÕES DE REGISTRO
+// REGISTRAR EVENTOS
 // ==========================================
 
 
@@ -77,7 +77,7 @@ async function registrarEvento(tipo, dados){
     try{
 
 
-        if(eventos && eventos.registrar){
+        if(eventos?.registrar){
 
 
             await eventos.registrar(
@@ -97,7 +97,7 @@ async function registrarEvento(tipo, dados){
 
         console.error(
 
-            "Erro ao registrar evento:",
+            "Erro evento:",
 
             erro
 
@@ -117,13 +117,18 @@ async function registrarEvento(tipo, dados){
 
 
 
+// ==========================================
+// REGISTRAR MEMÓRIA
+// ==========================================
+
+
 async function registrarMemoria(tipo, dados){
 
 
     try{
 
 
-        if(memoria && memoria.salvar){
+        if(memoria?.salvar){
 
 
             await memoria.salvar(
@@ -143,7 +148,7 @@ async function registrarMemoria(tipo, dados){
 
         console.error(
 
-            "Erro ao salvar memória:",
+            "Erro memória:",
 
             erro
 
@@ -163,13 +168,18 @@ async function registrarMemoria(tipo, dados){
 
 
 
+// ==========================================
+// CHAMAR O MUNDO
+// ==========================================
+
+
 async function chamarMundo(tipo, dados){
 
 
     try{
 
 
-        if(mundo && mundo.comentar){
+        if(mundo?.comentar){
 
 
             return await mundo.comentar(
@@ -189,7 +199,7 @@ async function chamarMundo(tipo, dados){
 
         console.error(
 
-            "Erro no Mundo:",
+            "Erro Mundo:",
 
             erro
 
@@ -203,17 +213,8 @@ async function chamarMundo(tipo, dados){
 
 
 }
-
-
-
-
-
-
-
-
-
 // ==========================================
-// COMANDO ADMIN
+// COMANDO ADMINISTRATIVO
 // ==========================================
 
 
@@ -241,7 +242,15 @@ data: new SlashCommandBuilder()
 
 
 
+
+
+// ==========================================
+// XP
+// ==========================================
+
+
 .addSubcommand(sub =>
+
 
 
 sub
@@ -250,9 +259,10 @@ sub
 
 .setDescription(
 
-    "Adicionar XP a um jogador."
+    "Adicionar experiência a um jogador."
 
 )
+
 
 
 .addStringOption(option =>
@@ -274,6 +284,7 @@ option
 )
 
 
+
 .addIntegerOption(option =>
 
 
@@ -293,6 +304,7 @@ option
 )
 
 
+
 )
 
 
@@ -301,7 +313,15 @@ option
 
 
 
+
+
+// ==========================================
+// FALA DO MUNDO
+// ==========================================
+
+
 .addSubcommand(sub =>
+
 
 
 sub
@@ -310,9 +330,10 @@ sub
 
 .setDescription(
 
-    "Gerar uma fala do Mundo."
+    "Fazer O Mundo se manifestar."
 
 )
+
 
 
 .addStringOption(option =>
@@ -324,7 +345,7 @@ option
 
 .setDescription(
 
-    "Contexto da fala."
+    "Situação que O Mundo deve comentar."
 
 )
 
@@ -334,16 +355,288 @@ option
 )
 
 
-),
+
+)
 
 
 
 
 
+
+
+
+
+// ==========================================
+// HABILIDADE
+// ==========================================
+
+
+.addSubcommand(sub =>
+
+
+
+sub
+
+.setName("habilidade")
+
+.setDescription(
+
+    "Gerenciar habilidades."
+
+)
+
+
+
+.addStringOption(option =>
+
+
+option
+
+.setName("acao")
+
+.setDescription(
+
+    "Adicionar ou remover."
+
+)
+
+.setRequired(true)
+
+
+
+.addChoices(
+
+{
+
+name:"Adicionar",
+
+value:"adicionar"
+
+},
+
+{
+
+name:"Remover",
+
+value:"remover"
+
+}
+
+)
+
+
+
+)
+
+
+
+.addStringOption(option =>
+
+
+option
+
+.setName("jogador")
+
+.setDescription(
+
+    "Jogador da habilidade."
+
+)
+
+.setRequired(true)
+
+
+)
+
+
+
+.addStringOption(option =>
+
+
+option
+
+.setName("nome")
+
+.setDescription(
+
+    "Nome da habilidade."
+
+)
+
+.setRequired(true)
+
+
+)
+
+
+
+.addIntegerOption(option =>
+
+
+option
+
+.setName("nivel")
+
+.setDescription(
+
+    "Nível da habilidade."
+
+)
+
+.setRequired(false)
+
+
+)
+
+
+
+)
+
+
+
+
+
+
+
+
+
+// ==========================================
+// MAGIA
+// ==========================================
+
+
+.addSubcommand(sub =>
+
+
+
+sub
+
+.setName("magia")
+
+.setDescription(
+
+    "Gerenciar magias."
+
+)
+
+
+
+.addStringOption(option =>
+
+
+option
+
+.setName("acao")
+
+.setDescription(
+
+    "Adicionar ou remover."
+
+)
+
+.setRequired(true)
+
+
+
+.addChoices(
+
+{
+
+name:"Adicionar",
+
+value:"adicionar"
+
+},
+
+{
+
+name:"Remover",
+
+value:"remover"
+
+}
+
+)
+
+
+
+)
+
+
+
+.addStringOption(option =>
+
+
+option
+
+.setName("jogador")
+
+.setDescription(
+
+    "Jogador da magia."
+
+)
+
+.setRequired(true)
+
+
+)
+
+
+
+.addStringOption(option =>
+
+
+option
+
+.setName("nome")
+
+.setDescription(
+
+    "Nome da magia."
+
+)
+
+.setRequired(true)
+
+
+)
+
+
+
+.addIntegerOption(option =>
+
+
+option
+
+.setName("nivel")
+
+.setDescription(
+
+    "Nível da magia."
+
+)
+
+.setRequired(false)
+
+
+)
+
+
+
+)
+// ==========================================
+// EXECUÇÃO
+// ==========================================
 
 
 async execute(interaction){
 
+
+
+    // ======================================
+    // SEGURANÇA DO MESTRE
+    // ======================================
 
 
     if(interaction.user.id !== DONO_ID){
@@ -372,10 +665,23 @@ async execute(interaction){
 
 
 
+
+
+
+
+
     const sub = interaction.options.getSubcommand();
-// ==========================================
-// ADMIN XP
-// ==========================================
+
+
+
+
+
+
+
+
+    // ======================================
+    // DAR XP
+    // ======================================
 
 
     if(sub === "xp"){
@@ -403,7 +709,7 @@ async execute(interaction){
 
 
 
-        const dadosXP = {
+        const dados = {
 
 
 
@@ -433,7 +739,7 @@ async execute(interaction){
 
             "xp_adicionado",
 
-            dadosXP
+            dados
 
         );
 
@@ -448,7 +754,7 @@ async execute(interaction){
 
             "xp_adicionado",
 
-            dadosXP
+            dados
 
         );
 
@@ -459,11 +765,11 @@ async execute(interaction){
 
 
 
-        const respostaMundo = await chamarMundo(
+        const fala = await chamarMundo(
 
             "xp_adicionado",
 
-            dadosXP
+            dados
 
         );
 
@@ -474,26 +780,516 @@ async execute(interaction){
 
 
 
-        const embed = new EmbedBuilder()
+        return interaction.reply({
 
 
 
-        .setTitle(
-
-            "⭐ Experiência concedida"
-
-        )
+            embeds:[
 
 
 
-        .setDescription(
+                new EmbedBuilder()
+
+
+
+                .setTitle(
+
+                    "⭐ Experiência concedida"
+
+                )
+
+
+
+                .setDescription(
 
 
 `
-🌍 **O Mundo observou uma
+🌍 O Mundo observou uma alteração.
+
+
+👤 Jogador:
+
+${jogador}
+
+
+
+⭐ XP recebido:
+
+${quantidade}
+
+
+
+━━━━━━━━━━━━━━━━━━
+
+
+${fala || "O destino foi alterado."}
+
+`
+
+                )
+
+
+
+                .setTimestamp()
+
+
+
+            ]
+
+
+
+        });
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // ======================================
+    // FALA MANUAL DO MUNDO
+    // ======================================
+
+
+    if(sub === "mundo"){
+
+
+
+        const contexto = interaction.options.getString(
+
+            "contexto"
+
+        );
+
+
+
+
+
+
+
+
+        const dados = {
+
+
+
+            contexto,
+
+
+            administrador: interaction.user.id,
+
+
+            data: Date.now()
+
+
+
+        };
+
+
+
+
+
+
+
+
+        await registrarEvento(
+
+            "fala_manual",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        await registrarMemoria(
+
+            "fala_manual",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        const fala = await chamarMundo(
+
+            "fala_manual",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        return interaction.reply({
+
+
+
+            embeds:[
+
+
+
+                new EmbedBuilder()
+
+
+
+                .setTitle(
+
+                    "🌍 O Mundo se manifesta"
+
+                )
+
+
+
+                .setDescription(
+
+
+`
+${fala || contexto}
+
+
+━━━━━━━━━━━━━━━━━━
+
+
+📜 Registro realizado.
+
+`
+
+                )
+
+
+
+                .setTimestamp()
+
+
+
+            ]
+
+
+
+        });
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // ======================================
+    // HABILIDADES
+    // ======================================
+
+
+    if(sub === "habilidade"){
+
+
+
+        const acao = interaction.options.getString(
+
+            "acao"
+
+        );
+
+
+
+        const jogador = interaction.options.getString(
+
+            "jogador"
+
+        );
+
+
+
+        const nome = interaction.options.getString(
+
+            "nome"
+
+        );
+
+
+
+        const nivel = interaction.options.getInteger(
+
+            "nivel"
+
+        ) || 1;
+
+
+
+
+
+
+
+
+        const dados = {
+
+
+
+            jogador,
+
+
+            habilidade:nome,
+
+
+            nivel,
+
+
+            acao,
+
+
+            administrador:interaction.user.id,
+
+
+            data:Date.now()
+
+
+
+        };
+
+
+
+
+
+
+
+
+        await registrarEvento(
+
+            "habilidade_modificada",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        await registrarMemoria(
+
+            "habilidade_modificada",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        return interaction.reply({
+
+
+
+            content:
+
+            `⚔️ Habilidade ${acao}: ${nome} (${jogador}) nível ${nivel}.`,
+
+
+
+            ephemeral:false
+
+
+
+        });
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // ======================================
+    // MAGIAS
+    // ======================================
+
+
+    if(sub === "magia"){
+
+
+
+        const acao = interaction.options.getString(
+
+            "acao"
+
+        );
+
+
+
+        const jogador = interaction.options.getString(
+
+            "jogador"
+
+        );
+
+
+
+        const nome = interaction.options.getString(
+
+            "nome"
+
+        );
+
+
+
+        const nivel = interaction.options.getInteger(
+
+            "nivel"
+
+        ) || 1;
+
+
+
+
+
+
+
+
+        const dados = {
+
+
+
+            jogador,
+
+
+            magia:nome,
+
+
+            nivel,
+
+
+            acao,
+
+
+            administrador:interaction.user.id,
+
+
+            data:Date.now()
+
+
+
+        };
+
+
+
+
+
+
+
+
+        await registrarEvento(
+
+            "magia_modificada",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        await registrarMemoria(
+
+            "magia_modificada",
+
+            dados
+
+        );
+
+
+
+
+
+
+
+
+        return interaction.reply({
+
+
+
+            content:
+
+            `📖 Magia ${acao}: ${nome} (${jogador}) nível ${nivel}.`,
+
+
+
+            ephemeral:false
+
+
+
+        });
+
+
+
+    }
 // ==========================================
-// EXPORTAÇÃO DO SISTEMA ADMIN
+// CASO NENHUM COMANDO SEJA ENCONTRADO
 // ==========================================
+
+
+    return interaction.reply({
+
+
+
+        content:
+
+        "❌ Este comando administrativo ainda não existe.",
+
+
+
+        ephemeral:true
+
+
+
+    });
+
+
+
+}
+
 
 
 };
@@ -504,6 +1300,11 @@ async execute(interaction){
 
 
 
+
+
+// ==========================================
+// EXPORTAÇÕES
+// ==========================================
 
 
 module.exports = comandoAdmin;
