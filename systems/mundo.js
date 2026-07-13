@@ -1010,4 +1010,482 @@ return memorias[0];
 }
 
 
+
+
+
+
+async function tentarInterferir(
+
+personagemId,
+
+tipo
+
+){
+
+
+
+const relacao = await buscarRelacao(
+
+personagemId
+
+);
+
+
+
+
+
+if(!relacao){
+
+
+
+return false;
+
+
+
+}
+
+
+
+
+
+
+
+let chance = 0;
+
+
+
+
+
+
+if(tipo === "ajuda"){
+
+
+
+chance = (
+
+relacao.interesse +
+
+relacao.respeito
+
+) / 300;
+
+
+
+}
+
+
+
+
+
+
+
+if(tipo === "punicao"){
+
+
+
+chance = (
+
+relacao.irritacao
+
+) / 150;
+
+
+
+}
+
+
+
+
+
+
+
+if(chance > 0.80){
+
+
+
+chance = 0.80;
+
+
+
+}
+
+
+
+
+
+
+
+return Math.random() < chance;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function ajudarJogador(
+
+personagemId
+
+){
+
+
+
+await alterarRelacao(
+
+personagemId,
+
+"interferencias",
+
+1
+
+);
+
+
+
+
+
+
+
+const frasesAjuda = [
+
+
+
+"Eu não deveria fazer isso... mas admito que fiquei curioso.",
+
+
+
+"Considere isso um presente. Não espere que aconteça novamente.",
+
+
+
+"Vou alterar apenas uma pequena coisa. Ninguém precisa saber.",
+
+
+
+"Você teve sorte. Ou talvez eu tenha decidido que teria."
+
+
+
+];
+
+
+
+
+
+
+return escolher(
+
+frasesAjuda
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function punirJogador(
+
+personagemId
+
+){
+
+
+
+await alterarRelacao(
+
+personagemId,
+
+"irritacao",
+
+5
+
+);
+
+
+
+
+
+
+
+const frasesPunicao = [
+
+
+
+"Você queria testar o destino? Então observe o resultado.",
+
+
+
+"Talvez uma pequena dificuldade torne isso mais interessante.",
+
+
+
+"Não gosto de interferir... mas você tornou isso necessário."
+
+
+
+];
+
+
+
+
+
+
+
+return escolher(
+
+frasesPunicao
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function mentir(){
+
+
+
+const mentiras = [
+
+
+
+"Essa informação não existe.",
+
+
+
+"Eu não sei. Curioso, não é?",
+
+
+
+"Talvez exista uma resposta... talvez não.",
+
+
+
+"Você realmente acha que eu revelaria isso?",
+
+
+
+"Eu poderia contar a verdade, mas perderia a graça."
+
+
+
+];
+
+
+
+
+
+
+
+return escolher(
+
+mentiras
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function esconderInformacao(
+
+informacao
+
+){
+
+
+
+const respostas = [
+
+
+
+"Algumas verdades precisam permanecer escondidas.",
+
+
+
+"Descobrir isso faz parte da sua jornada.",
+
+
+
+"Se eu entregasse tudo, qual seria o sentido da aventura?",
+
+
+
+"Essa resposta pertence ao futuro."
+
+
+
+];
+
+
+
+
+
+
+return escolher(
+
+respostas
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function comandoMestre(
+
+personagemId,
+
+acao
+
+){
+
+
+
+switch(acao){
+
+
+
+case "favorecer":
+
+
+
+await alterarRelacao(
+
+personagemId,
+
+"respeito",
+
+5
+
+);
+
+
+
+return "O Mundo decidiu observar com mais interesse.";
+
+
+
+case "irritar":
+
+
+
+await alterarRelacao(
+
+personagemId,
+
+"irritacao",
+
+10
+
+);
+
+
+
+return "O Mundo perdeu um pouco da paciência.";
+
+
+
+case "observar":
+
+
+
+const relacao = await buscarRelacao(
+
+personagemId
+
+);
+
+
+
+return relacao;
+
+
+
+default:
+
+
+
+return "O Mundo permanece em silêncio.";
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+Mundo.registrarMemoria = registrarMemoria;
+
+Mundo.obterMemorias = obterMemorias;
+
+Mundo.alterarRelacao = alterarRelacao;
+
+Mundo.criarRelacao = criarRelacao;
+
+Mundo.registrarFeito = registrarFeito;
+
+Mundo.lembrarAlgo = lembrarAlgo;
+
+Mundo.tentarInterferir = tentarInterferir;
+
+Mundo.ajudarJogador = ajudarJogador;
+
+Mundo.punirJogador = punirJogador;
+
+Mundo.mentir = mentir;
+
+Mundo.esconderInformacao = esconderInformacao;
+
+Mundo.comandoMestre = comandoMestre;
+
+
 module.exports = Mundo;
