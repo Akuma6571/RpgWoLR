@@ -10,58 +10,34 @@ const DONO_ID = "806138859053121546";
 
 module.exports = {
 
-
     data: new SlashCommandBuilder()
 
         .setName("editarficha")
 
-        .setDescription(
-            "Edita uma ficha de jogador"
-        )
+        .setDescription("Edita qualquer parte de uma ficha")
 
 
         .addUserOption(option =>
-
             option
-
-                .setName("jogador")
-
-                .setDescription(
-                    "Jogador que terá a ficha alterada"
-                )
-
-                .setRequired(true)
-
+            .setName("jogador")
+            .setDescription("Jogador que terá a ficha alterada")
+            .setRequired(true)
         )
 
 
         .addStringOption(option =>
-
             option
-
-                .setName("atributo")
-
-                .setDescription(
-                    "Atributo que será alterado"
-                )
-
-                .setRequired(true)
-
+            .setName("atributo")
+            .setDescription("Campo que será alterado")
+            .setRequired(true)
         )
 
 
         .addStringOption(option =>
-
             option
-
-                .setName("valor")
-
-                .setDescription(
-                    "Novo valor do atributo"
-                )
-
-                .setRequired(true)
-
+            .setName("valor")
+            .setDescription("Novo valor")
+            .setRequired(true)
         ),
 
 
@@ -71,8 +47,7 @@ module.exports = {
 
         if (interaction.user.id !== DONO_ID) {
 
-
-            await interaction.reply({
+            return interaction.reply({
 
                 content:
                 "🌍 O mundo observa sua tentativa, mas este caminho não lhe foi concedido.",
@@ -81,23 +56,26 @@ module.exports = {
 
             });
 
-
-            return;
-
         }
 
 
 
-        const jogador = interaction.options.getUser("jogador");
+        const jogador =
+        interaction.options.getUser("jogador");
 
-        const atributo = interaction.options.getString("atributo");
 
-        const valor = interaction.options.getString("valor");
+        const atributo =
+        interaction.options.getString("atributo")
+        .toLowerCase();
+
+
+
+        const valor =
+        interaction.options.getString("valor");
 
 
 
         const atributosPermitidos = [
-
 
             "titulo",
             "nome",
@@ -129,9 +107,6 @@ module.exports = {
             "escuridao",
             "secundarias",
 
-            "habilidades",
-            "magias",
-
             "nivel",
             "xp"
 
@@ -142,17 +117,14 @@ module.exports = {
         if (!atributosPermitidos.includes(atributo)) {
 
 
-            await interaction.reply({
+            return interaction.reply({
 
                 content:
-                "🌍 Esse atributo não pertence às leis conhecidas do mundo.",
+                "🌍 Este atributo não existe nas leis do mundo.",
 
-                ephemeral: true
+                ephemeral:true
 
             });
-
-
-            return;
 
         }
 
@@ -161,30 +133,89 @@ module.exports = {
         try {
 
 
-            const resultado = await db.query(
+            const jogadorExiste = await db.query(
 
-                "SELECT nome FROM jogadores WHERE id = $1",
+                "SELECT id FROM jogadores WHERE id = $1",
 
-                [jogador.id]
+                [
+                    jogador.id
+                ]
 
             );
 
 
 
-            if (resultado.rows.length === 0) {
+            if (jogadorExiste.rows.length === 0) {
 
 
-                await interaction.reply({
+                return interaction.reply({
 
                     content:
-                    "🌍 Esse jogador ainda não possui uma ficha.",
+                    "🌍 Este jogador ainda não possui uma ficha.",
 
-                    ephemeral: true
+                    ephemeral:true
 
                 });
 
+            }
 
-                return;
+
+
+            let valorFinal = valor;
+
+
+
+            const camposNumericos = [
+
+                "idade",
+                "altura",
+
+                "vida",
+                "resistencia",
+                "forca",
+                "agilidade",
+                "estamina",
+                "mana",
+                "inteligencia",
+                "carisma",
+                "aura",
+                "sorte",
+                "chancecritica",
+
+                "magica",
+                "fogo",
+                "terra",
+                "ar",
+                "agua",
+                "luz",
+                "escuridao",
+                "secundarias",
+
+                "nivel",
+                "xp"
+
+            ];
+
+
+
+            if (camposNumericos.includes(atributo)) {
+
+                valorFinal = Number(valor);
+
+
+                if (isNaN(valorFinal)) {
+
+
+                    return interaction.reply({
+
+                        content:
+                        "🌍 Esse atributo precisa receber um número.",
+
+                        ephemeral:true
+
+                    });
+
+                }
 
             }
 
@@ -202,10 +233,9 @@ module.exports = {
 
                 `,
 
-
                 [
 
-                    valor,
+                    valorFinal,
 
                     jogador.id
 
@@ -219,13 +249,7 @@ module.exports = {
 
                 content:
 
-                `🌍 As leis do mundo foram alteradas.\n\n` +
-
-                `✨ Jogador: ${jogador.username}\n` +
-
-                `📜 Atributo: ${atributo}\n` +
-
-                `🔹 Novo valor: ${valor}`
+                `🌍 As leis do mundo foram alteradas.\n\n✨ ${atributo} de ${jogador.username} agora é ${valorFinal}.`
 
             });
 
@@ -240,17 +264,15 @@ module.exports = {
             await interaction.reply({
 
                 content:
-                "🌍 Uma falha ocorreu ao tentar alterar a realidade.",
+                "🌍 O mundo tentou alterar a ficha, mas algo falhou.",
 
-                ephemeral: true
+                ephemeral:true
 
             });
-
 
         }
 
 
     }
-
 
 };
