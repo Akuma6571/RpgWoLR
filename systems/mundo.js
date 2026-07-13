@@ -6,23 +6,23 @@ const database = require("../database/database");
 
 
 
-
 function escolher(lista){
 
 
-return lista[
+    if(!lista || lista.length === 0){
 
-Math.floor(
+        return "O Mundo observa em silêncio.";
 
-Math.random() * lista.length
+    }
 
-)
 
-];
+    return lista[
 
+        Math.floor(Math.random() * lista.length)
+
+    ];
 
 }
-
 
 
 
@@ -34,58 +34,228 @@ async function comentarEvento(
 
 personagemId,
 
-evento
+evento,
+
+dados = {}
 
 ){
 
 
 
-let categoria = "vitoria";
+    let categoria = "vitoria";
+
+
+
+    if(evento === "derrota")
+        categoria = "derrota";
+
+
+    if(evento === "morte")
+        categoria = "morte";
+
+
+    if(evento === "sorte")
+        categoria = "sorte";
+
+
+    if(evento === "azar")
+        categoria = "azar";
+
+
+    if(evento === "chefe")
+        categoria = "chefe_derrotado";
+
+
+    if(evento === "entidade")
+        categoria = "entidade_derrotada";
 
 
 
 
 
-if(evento === "derrota"){
 
-categoria = "derrota";
+    let relacao = await buscarRelacao(
+
+        personagemId
+
+    );
+
+
+
+
+
+
+    let chanceEspecial = Math.random();
+
+
+
+
+    // Jogadores que chamam muita atenção recebem respostas diferentes
+
+
+    if(relacao){
+
+
+        if(relacao.respeito > 70 && chanceEspecial < 0.3){
+
+            return "Interessante... finalmente algo digno da minha atenção.";
+
+        }
+
+
+
+        if(relacao.irritacao > 70 && chanceEspecial < 0.3){
+
+            return "Você realmente está se esforçando para testar minha paciência.";
+
+        }
+
+
+
+        if(relacao.diversao > 70 && chanceEspecial < 0.3){
+
+            return "Confesso que você é uma das poucas coisas que ainda conseguem me entreter.";
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+    return escolher(
+
+        frases[categoria]
+
+    );
 
 }
 
 
-if(evento === "morte"){
 
-categoria = "morte";
+
+
+async function criarRelacao(
+
+personagemId
+
+){
+
+
+
+    await database.executar(
+
+    `
+
+    INSERT INTO mundo_personagem
+
+    (
+
+    personagem_id,
+
+    interesse,
+
+    respeito,
+
+    irritacao,
+
+    curiosidade,
+
+    diversao,
+
+    interferencias,
+
+    afinidade
+
+    )
+
+
+    VALUES
+
+    (
+
+    $1,
+
+    0,
+
+    0,
+
+    0,
+
+    0,
+
+    0,
+
+    0,
+
+    'neutro'
+
+    )
+
+
+    ON CONFLICT DO NOTHING
+
+
+    `,
+
+
+    [
+
+    personagemId
+
+    ]
+
+    );
+
 
 }
 
 
-if(evento === "sorte"){
 
-categoria = "sorte";
+
+
+
+
+
+
+async function buscarRelacao(
+
+personagemId
+
+){
+
+
+
+    return await database.buscarUm(
+
+    `
+
+    SELECT *
+
+    FROM mundo_personagem
+
+    WHERE personagem_id=$1
+
+
+    `,
+
+
+    [
+
+    personagemId
+
+    ]
+
+    );
+
 
 }
 
 
-if(evento === "azar"){
-
-categoria = "azar";
-
-}
-
-
-if(evento === "chefe"){
-
-categoria = "chefe_derrotado";
-
-}
-
-
-if(evento === "entidade"){
-
-categoria = "entidade_derrotada";
-
-}
 
 
 
@@ -93,12 +263,75 @@ categoria = "entidade_derrotada";
 
 
 
-return escolher(
+async function alterarRelacao(
 
-frases[categoria]
+personagemId,
 
-);
+campo,
 
+valor
+
+){
+
+
+
+    const camposPermitidos = [
+
+
+        "interesse",
+
+        "respeito",
+
+        "irritacao",
+
+        "curiosidade",
+
+        "diversao",
+
+        "interferencias"
+
+
+    ];
+
+
+
+
+
+    if(!camposPermitidos.includes(campo)){
+
+        return;
+
+    }
+
+
+
+
+
+
+
+    await database.executar(
+
+    `
+
+    UPDATE mundo_personagem
+
+    SET ${campo} = ${campo} + $1
+
+    WHERE personagem_id=$2
+
+
+    `,
+
+
+    [
+
+    valor,
+
+    personagemId
+
+    ]
+
+    );
 
 
 }
@@ -125,62 +358,56 @@ importancia = 1
 
 
 
-try{
+    await database.executar(
+
+    `
+
+    INSERT INTO memorias_mundo
+
+    (
+
+    personagem_id,
+
+    tipo,
+
+    descricao,
+
+    importancia
+
+    )
 
 
+    VALUES
 
-await database.executar(
+    (
 
-`
+    $1,
 
-INSERT INTO memorias_mundo
+    $2,
 
-(
+    $3,
 
-personagem_id,
+    $4
 
-tipo,
-
-descricao,
-
-importancia
-
-)
-
-VALUES($1,$2,$3,$4)
-
-`,
-
-[
-
-personagemId,
-
-tipo,
-
-descricao,
-
-importancia
-
-]
-
-);
+    )
 
 
-
-}catch(error){
-
-
-console.log(
-
-"Erro ao salvar memória do Mundo:",
-
-error.message
-
-);
+    `,
 
 
-}
+    [
 
+    personagemId,
+
+    tipo,
+
+    descricao,
+
+    importancia
+
+    ]
+
+    );
 
 
 }
@@ -193,7 +420,7 @@ error.message
 
 
 
-async function criarRelacao(
+async function obterMemorias(
 
 personagemId
 
@@ -201,66 +428,29 @@ personagemId
 
 
 
-try{
+    return await database.buscarTodos(
+
+    `
+
+    SELECT *
+
+    FROM memorias_mundo
+
+    WHERE personagem_id=$1
+
+    ORDER BY importancia DESC
 
 
-
-await database.executar(
-
-`
-
-INSERT INTO mundo_personagem
-
-(
-
-personagem_id,
-
-interesse,
-
-interferencias,
-
-afinidade
-
-)
-
-VALUES($1,$2,$3,$4)
-
-ON CONFLICT DO NOTHING
-
-`,
-
-[
-
-personagemId,
-
-0,
-
-0,
-
-"neutro"
-
-]
-
-);
+    `,
 
 
+    [
 
-}catch(error){
+    personagemId
 
+    ]
 
-
-console.log(
-
-"Erro ao criar relação:",
-
-error.message
-
-);
-
-
-
-}
-
+    );
 
 
 }
@@ -273,41 +463,112 @@ error.message
 
 
 
-async function aumentarInteresse(
+async function tentarInterferir(
 
 personagemId,
 
-valor
+tipo
 
 ){
 
 
 
-await database.executar(
+    let relacao = await buscarRelacao(
 
-`
+        personagemId
 
-UPDATE mundo_personagem
+    );
 
-SET interesse = interesse + $1
 
-WHERE personagem_id=$2
 
-`,
 
-[
 
-valor,
+    if(!relacao){
 
-personagemId
+        return false;
 
-]
+    }
 
-);
+
+
+
+
+
+    let chance = 0;
+
+
+
+
+
+    if(tipo === "ajuda"){
+
+        chance = relacao.interesse / 200;
+
+    }
+
+
+
+
+
+    if(tipo === "punicao"){
+
+        chance = relacao.irritacao / 200;
+
+    }
+
+
+
+
+
+
+    return Math.random() < chance;
 
 
 
 }
+
+
+
+
+
+
+
+
+
+async function mentir(){
+
+
+
+
+const respostas = [
+
+
+"Talvez."
+
+,
+
+"Eu poderia responder... mas qual seria a graça?",
+
+"Essa informação não pertence a você.",
+
+"Tenho uma resposta, mas prefiro observar sua descoberta.",
+
+"Quem disse que eu sou obrigado a dizer a verdade?"
+
+
+
+];
+
+
+
+
+
+return escolher(respostas);
+
+
+
+}
+
 
 
 
@@ -319,18 +580,28 @@ personagemId
 module.exports = {
 
 
-
 comentarEvento,
-
-
-registrarMemoria,
 
 
 criarRelacao,
 
 
-aumentarInteresse
+buscarRelacao,
 
+
+alterarRelacao,
+
+
+registrarMemoria,
+
+
+obterMemorias,
+
+
+tentarInterferir,
+
+
+mentir
 
 
 };
