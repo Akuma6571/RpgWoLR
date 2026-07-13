@@ -437,3 +437,359 @@ await pool.query(query);
 
 
 }
+
+async function criarTabelaMundo(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS mundo_personagem (
+
+
+
+personagem_id TEXT PRIMARY KEY,
+
+
+
+interesse INTEGER DEFAULT 0,
+
+
+
+respeito INTEGER DEFAULT 0,
+
+
+
+irritacao INTEGER DEFAULT 0,
+
+
+
+curiosidade INTEGER DEFAULT 0,
+
+
+
+diversao INTEGER DEFAULT 0,
+
+
+
+interferencias INTEGER DEFAULT 0,
+
+
+
+afinidade TEXT DEFAULT 'neutro',
+
+
+
+segredo TEXT
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function criarTabelaMemorias(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS memorias_mundo (
+
+
+
+id SERIAL PRIMARY KEY,
+
+
+
+personagem_id TEXT,
+
+
+
+tipo TEXT,
+
+
+
+descricao TEXT,
+
+
+
+importancia INTEGER DEFAULT 1,
+
+
+
+data_evento TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function criarTabelaEventos(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS eventos (
+
+
+
+id SERIAL PRIMARY KEY,
+
+
+
+personagem_id TEXT,
+
+
+
+tipo TEXT,
+
+
+
+alvo TEXT,
+
+
+
+descricao TEXT,
+
+
+
+resultado TEXT,
+
+
+
+xp_recebido BIGINT DEFAULT 0,
+
+
+
+data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function criarTabelaRolagens(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS rolagens (
+
+
+
+id SERIAL PRIMARY KEY,
+
+
+
+personagem_id TEXT,
+
+
+
+tipo TEXT,
+
+
+
+resultado INTEGER,
+
+
+
+modificador INTEGER DEFAULT 0,
+
+
+
+motivo TEXT,
+
+
+
+data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function criarTabelaEvolucoes(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS evolucoes_raca (
+
+
+
+id SERIAL PRIMARY KEY,
+
+
+
+personagem_id TEXT,
+
+
+
+raca_anterior TEXT,
+
+
+
+raca_nova TEXT,
+
+
+
+motivo TEXT,
+
+
+
+data TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function criarTabelaSlots(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS jogadores_slots (
+
+
+
+id SERIAL PRIMARY KEY,
+
+
+
+usuario_id TEXT,
+
+
+
+slot INTEGER,
+
+
+
+personagem_id TEXT
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
