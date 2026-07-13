@@ -12,13 +12,11 @@ const database = require("../Database/database");
 
 
 
-// ===============================
+// ==========================================
 // BOTÕES
-// ===============================
-
+// ==========================================
 
 function criarBotoes(){
-
 
     return new ActionRowBuilder()
 
@@ -54,28 +52,24 @@ function criarBotoes(){
 
 
 
-// ===============================
-// PÁGINA RESUMO
-// ===============================
 
+
+// ==========================================
+// PÁGINA RESUMO
+// ==========================================
 
 function paginaResumo(personagem){
-
 
     return new EmbedBuilder()
 
     .setTitle(
-
         `🌍 ${personagem.titulo}`
-
     )
-
 
     .setDescription(
 
 `
 ━━━━━━━━━━━━━━
-
 
 👤 **Nome:** ${personagem.nome}
 
@@ -113,7 +107,7 @@ function paginaResumo(personagem){
 🌌 Aura: ${personagem.aura} | 🍀 Sorte: ${personagem.sorte}
 
 
-              🎯 Chance Crítica: ${personagem.chancecritica}%
+              🎯 **Chance Crítica: ${personagem.chancecritica}%**
 
 
 ━━━━━━━━━━━━━━
@@ -131,23 +125,24 @@ function paginaResumo(personagem){
 
     .setTimestamp();
 
-}// ===============================
-// PÁGINA APTIDÕES
-// ===============================
+}
 
+
+
+
+
+
+// ==========================================
+// PÁGINA APTIDÕES
+// ==========================================
 
 function paginaAptidoes(personagem){
 
-
     return new EmbedBuilder()
 
-
     .setTitle(
-
         "✨ Aptidões"
-
     )
-
 
     .setDescription(
 
@@ -179,13 +174,11 @@ function paginaAptidoes(personagem){
 
 
 
-// ===============================
+// ==========================================
 // PÁGINA HABILIDADES
-// ===============================
-
+// ==========================================
 
 function paginaHabilidades(habilidades){
-
 
     let texto = "";
 
@@ -193,42 +186,29 @@ function paginaHabilidades(habilidades){
 
     if(habilidades.length === 0){
 
-
         texto =
-
         "Nenhuma habilidade aprendida.";
 
-
-
     }else{
-
 
 
         habilidades.forEach(habilidade => {
 
 
             texto +=
-
             `⚔️ **${habilidade.nome}**\n`;
-
 
 
             if(habilidade.descricao){
 
-
                 texto +=
-
                 `${habilidade.descricao}\n`;
-
 
             }
 
 
-
             texto +=
-
             `⭐ XP: ${habilidade.xp} | Nível: ${habilidade.nivel}\n\n`;
-
 
 
         });
@@ -238,25 +218,15 @@ function paginaHabilidades(habilidades){
 
 
 
-
-
-
     return new EmbedBuilder()
 
-
     .setTitle(
-
         "⚔️ Habilidades"
-
     )
 
-
     .setDescription(
-
-        texto
-
+        texto || "Nenhuma habilidade aprendida."
     );
-
 
 }
 
@@ -265,60 +235,41 @@ function paginaHabilidades(habilidades){
 
 
 
-
-// ===============================
+// ==========================================
 // PÁGINA MAGIAS
-// ===============================
-
+// ==========================================
 
 function paginaMagias(magias){
-
-
 
     let texto = "";
 
 
 
-
     if(magias.length === 0){
 
-
         texto =
-
         "Nenhuma magia aprendida.";
 
-
-
     }else{
-
 
 
         magias.forEach(magia => {
 
 
-
             texto +=
-
             `📖 **${magia.nome}**\n`;
-
 
 
             if(magia.descricao){
 
-
                 texto +=
-
                 `${magia.descricao}\n`;
-
 
             }
 
 
-
             texto +=
-
             `⭐ XP: ${magia.xp} | Nível: ${magia.nivel}\n\n`;
-
 
 
         });
@@ -328,15 +279,180 @@ function paginaMagias(magias){
 
 
 
-
-
-
     return new EmbedBuilder()
 
+    .setTitle(
+        "📖 Magias"
+    )
 
-    .// ===============================
-// PROCESSAR BOTÕES DA FICHA
-// ===============================
+    .setDescription(
+        texto || "Nenhuma magia aprendida."
+    );
+
+}// ==========================================
+// COMANDO /FICHA
+// ==========================================
+
+
+const comandoFicha = {
+
+
+    data: new SlashCommandBuilder()
+
+    .setName("ficha")
+
+    .setDescription(
+        "Mostra a ficha do personagem."
+    )
+
+
+    .addIntegerOption(option =>
+
+        option
+
+        .setName("slot")
+
+        .setDescription(
+            "Número do personagem."
+        )
+
+        .setRequired(true)
+
+    ),
+
+
+
+
+
+
+    async execute(interaction){
+
+
+
+        const slot = interaction.options.getInteger(
+            "slot"
+        );
+
+
+
+        const usuario = interaction.user.id;
+
+
+
+
+
+        const personagem = await database.buscarUm(
+
+`
+SELECT *
+
+FROM jogadores
+
+WHERE usuario_id=$1
+
+AND slot=$2
+`,
+
+[
+    usuario,
+    slot
+]
+
+);
+
+
+
+
+
+
+        if(!personagem){
+
+
+            return interaction.reply({
+
+                content:
+
+                "❌ Personagem não encontrado.",
+
+                ephemeral:true
+
+            });
+
+
+        }
+
+
+
+
+
+
+
+        const mensagem = await interaction.reply({
+
+            embeds:[
+
+                paginaResumo(personagem)
+
+            ],
+
+            components:[
+
+                criarBotoes()
+
+            ],
+
+            fetchReply:true
+
+        });
+
+
+
+
+
+
+        await database.executar(
+
+`
+UPDATE jogadores
+
+SET mensagem_ficha=$1,
+
+canal_ficha=$2
+
+WHERE id=$3
+`,
+
+[
+
+    mensagem.id,
+
+    mensagem.channel.id,
+
+    personagem.id
+
+]
+
+);
+
+
+
+
+    }
+
+
+};
+
+
+
+
+
+
+
+
+
+// ==========================================
+// PROCESSAR BOTÕES
+// ==========================================
 
 
 async function processarBotao(interaction){
@@ -344,6 +460,7 @@ async function processarBotao(interaction){
 
 
     const mensagemId = interaction.message.id;
+
 
 
 
@@ -371,28 +488,29 @@ mensagemId
 
 
 
-if(!personagem){
+    if(!personagem){
 
 
-    return interaction.reply({
+        return interaction.reply({
 
-        content:
+            content:
 
-        "❌ Esta ficha não está mais vinculada a um personagem.",
+            "❌ Essa ficha não está vinculada a nenhum personagem.",
 
-        ephemeral:true
+            ephemeral:true
 
-    });
-
-
-}
+        });
 
 
-
+    }
 
 
 
-const habilidades = await database.buscarTodos(
+
+
+
+
+    const habilidades = await database.buscarTodos(
 
 `
 SELECT *
@@ -416,7 +534,7 @@ personagem.id
 
 
 
-const magias = await database.buscarTodos(
+    const magias = await database.buscarTodos(
 
 `
 SELECT *
@@ -440,142 +558,111 @@ personagem.id
 
 
 
-let embed;
+    let embed;
 
 
 
 
 
-switch(interaction.customId){
+    switch(interaction.customId){
 
 
 
-case "ficha_resumo":
+        case "ficha_resumo":
 
 
+            embed = paginaResumo(personagem);
 
-    embed = paginaResumo(personagem);
 
+        break;
 
-break;
 
 
 
 
+        case "ficha_aptidoes":
 
-case "ficha_aptidoes":
 
+            embed = paginaAptidoes(personagem);
 
 
-    embed = paginaAptidoes(personagem);
+        break;
 
 
-break;
 
 
 
+        case "ficha_habilidades":
 
 
-case "ficha_habilidades":
+            embed = paginaHabilidades(habilidades);
 
 
+        break;
 
-    embed = paginaHabilidades(habilidades);
 
 
-break;
 
 
+        case "ficha_magias":
 
 
+            embed = paginaMagias(magias);
 
-case "ficha_magias":
 
+        break;
 
 
-    embed = paginaMagias(magias);
 
 
-break;
 
+        default:
 
 
-
-
-default:
-
-
-return;
-
-}
-
-
-
-
-await interaction.update({
-
-
-
-embeds:[embed],
-
-
-
-components:[
-
-criarBotoes()
-
-]
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-// ===============================
-// EXPORTAÇÃO
-// ===============================
-
-
-module.exports = {
-
-
-    data: module.exports.data,
-
-
-    execute: module.exports.execute,
-
-
-    processarBotao,
-
-
-    criarBotoes,
-
-
-    paginas:{
-
-
-        resumo: paginaResumo,
-
-
-        aptidoes: paginaAptidoes,
-
-
-        habilidades: paginaHabilidades,
-
-
-        magias: paginaMagias
-
+            return;
 
     }
 
 
-};
+
+
+
+
+
+    await interaction.update({
+
+        embeds:[
+
+            embed
+
+        ],
+
+        components:[
+
+            criarBotoes()
+
+        ]
+
+    });
+
+
+
+}
+
+
+
+
+
+
+
+
+// ==========================================
+// EXPORTAÇÃO
+// ==========================================
+
+
+module.exports = {
+
+    data: comandoFicha.data,
+
+   
