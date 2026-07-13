@@ -100,7 +100,7 @@ function paginaResumo(personagem){
 
 💪 Força: ${personagem.forca} | 🏃 Agilidade: ${personagem.agilidade}
 
-🔥 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
+🧗 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
 
 🧠 Inteligência: ${personagem.inteligencia} | 🎭 Carisma: ${personagem.carisma}
 
@@ -662,8 +662,6 @@ personagem.id
 
 
 module.exports = {
-
-    module.exports = {
 
     data: comandoFicha.data,
 
