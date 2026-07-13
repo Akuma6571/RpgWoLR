@@ -19,7 +19,7 @@ async execute(message, args){
 
 // COLOQUE SEU ID DO DISCORD AQUI
 
-const MESTRE_ID = "SEU_ID_AQUI";
+const MESTRE_ID = "806138859053121546";
 
 
 
