@@ -190,7 +190,9 @@ interesse: Math.floor(respeito / 2)
 
 async function morreu(
 
-personagem_id
+personagem_id,
+
+motivo = "O Mundo observou sua morte."
 
 ){
 
@@ -202,7 +204,7 @@ personagem_id,
 
 "morte",
 
-"O Mundo observou sua morte.",
+motivo,
 
 20,
 
@@ -308,6 +310,172 @@ curiosidade: 5
 
 
 
+async function magiaProibida(
+
+personagem_id,
+
+magia
+
+){
+
+
+
+return await registrarEvento(
+
+personagem_id,
+
+"magia_proibida",
+
+`Obteve conhecimento da magia proibida: ${magia}.`,
+
+80,
+
+{
+
+interesse: 30,
+
+curiosidade: 20
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function descobriuSegredo(
+
+personagem_id,
+
+segredo
+
+){
+
+
+
+return await registrarEvento(
+
+personagem_id,
+
+"descoberta",
+
+`Descobriu o segredo: ${segredo}.`,
+
+40,
+
+{
+
+interesse: 15
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function encontrouDeus(
+
+personagem_id,
+
+entidade
+
+){
+
+
+
+return await registrarEvento(
+
+personagem_id,
+
+"deus",
+
+`Encontrou a entidade divina: ${entidade}.`,
+
+100,
+
+{
+
+interesse: 50,
+
+respeito: 30
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function derrotouEntidade(
+
+personagem_id,
+
+entidade
+
+){
+
+
+
+return await registrarEvento(
+
+personagem_id,
+
+"entidade_derrotada",
+
+`Derrotou a entidade: ${entidade}.`,
+
+150,
+
+{
+
+respeito: 100,
+
+interesse: 50
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
 module.exports = {
 
 
@@ -320,7 +488,15 @@ morreu,
 
 evoluiu,
 
-aprendeuMagia
+aprendeuMagia,
+
+magiaProibida,
+
+descobriuSegredo,
+
+encontrouDeus,
+
+derrotouEntidade
 
 
 
