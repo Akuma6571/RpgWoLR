@@ -382,7 +382,295 @@ const migrations = [
     `
 }
 
-];
+{
+    version: 11,
+
+    name: "Criar criaturas domadas",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS criaturas_domadas(
+
+        id SERIAL PRIMARY KEY,
+
+        personagem_id INTEGER NOT NULL,
+
+
+        nome TEXT,
+
+        especie TEXT,
+
+
+        nivel INTEGER DEFAULT 1,
+
+        xp BIGINT DEFAULT 0,
+
+
+        tipo TEXT DEFAULT 'domada',
+
+
+        descricao TEXT,
+
+
+        criada_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 12,
+
+    name: "Criar criaturas subjugadas",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS criaturas_subjugadas(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_id INTEGER NOT NULL,
+
+
+        nome TEXT,
+
+
+        especie TEXT,
+
+
+        nivel INTEGER DEFAULT 1,
+
+
+        poder TEXT,
+
+
+        obediencia INTEGER DEFAULT 50,
+
+
+        odio INTEGER DEFAULT 50,
+
+
+        xp BIGINT DEFAULT 0,
+
+
+        descricao TEXT,
+
+
+        criada_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 13,
+
+    name: "Criar memória do Mundo",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS memoria_mundo(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_id INTEGER NOT NULL,
+
+
+        evento TEXT,
+
+
+        importancia INTEGER DEFAULT 1,
+
+
+        comentario TEXT,
+
+
+        criado_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 14,
+
+    name: "Criar títulos do Mundo",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS titulos_mundo(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_id INTEGER NOT NULL,
+
+
+        titulo TEXT,
+
+
+        motivo TEXT,
+
+
+        ativo BOOLEAN DEFAULT TRUE,
+
+
+        criado_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 15,
+
+    name: "Criar ficha Discord",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS fichas_discord(
+
+        personagem_id INTEGER PRIMARY KEY,
+
+
+        mensagem_id TEXT,
+
+
+        canal_id TEXT,
+
+
+        atualizada_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 16,
+
+    name: "Criar pactos",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS pactos(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_id INTEGER NOT NULL,
+
+
+        entidade TEXT,
+
+
+        tipo TEXT,
+
+
+        beneficio TEXT,
+
+
+        custo TEXT,
+
+
+        ativo BOOLEAN DEFAULT TRUE,
+
+
+        criado_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 17,
+
+    name: "Criar relações entre personagens",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS relacoes_personagens(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_origem INTEGER,
+
+
+        personagem_destino INTEGER,
+
+
+        tipo TEXT,
+
+
+        nivel INTEGER DEFAULT 0,
+
+
+        descricao TEXT,
+
+
+        criado_em TIMESTAMP DEFAULT NOW()
+
+
+    );
+
+    `
+}];
 
 
 
