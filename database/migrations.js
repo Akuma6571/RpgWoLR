@@ -670,6 +670,244 @@ const migrations = [
     );
 
     `
+}{
+    version: 18,
+
+    name: "Criar estatísticas de combate",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS estatisticas_combate(
+
+        personagem_id INTEGER PRIMARY KEY,
+
+
+        combates INTEGER DEFAULT 0,
+
+        vitorias INTEGER DEFAULT 0,
+
+        derrotas INTEGER DEFAULT 0,
+
+        fugas INTEGER DEFAULT 0,
+
+
+        mortes_causadas INTEGER DEFAULT 0,
+
+        mortes_sofridas INTEGER DEFAULT 0,
+
+
+        chefes_derrotados INTEGER DEFAULT 0,
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 19,
+
+    name: "Criar mortes e pós vida",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS historico_morte(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_id INTEGER NOT NULL,
+
+
+        numero_morte INTEGER,
+
+
+        local TEXT,
+
+
+        causa TEXT,
+
+
+        estado_resultante TEXT,
+
+
+        descricao TEXT,
+
+
+        data TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 20,
+
+    name: "Criar exclusão permanente",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS personagens_excluidos(
+
+        id SERIAL PRIMARY KEY,
+
+
+        nome TEXT,
+
+
+        antigo_id INTEGER,
+
+
+        motivo TEXT,
+
+
+        excluido_em TIMESTAMP DEFAULT NOW()
+
+    );
+
+    `
+},
+
+
+{
+    version: 21,
+
+    name: "Criar limites dos atributos",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS limites_atributos(
+
+        id SERIAL PRIMARY KEY,
+
+
+        atributo TEXT UNIQUE,
+
+
+        limite BIGINT
+
+
+    );
+
+
+    INSERT INTO limites_atributos
+
+    (atributo, limite)
+
+    VALUES
+
+    ('vida',1000000000000),
+
+    ('forca',950000000000),
+
+    ('agilidade',800000000000),
+
+    ('estamina',1000000000000),
+
+    ('mana',1000000000000),
+
+    ('inteligencia',1500000000),
+
+    ('carisma',1000000),
+
+    ('aura',500000000000),
+
+    ('sorte',1000),
+
+    ('chance_critica',150)
+
+    ON CONFLICT (atributo)
+
+    DO NOTHING;
+
+    `
+
+},
+
+
+{
+    version: 22,
+
+    name: "Criar configurações do Mundo",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS configuracoes_mundo(
+
+        id SERIAL PRIMARY KEY,
+
+
+        nome TEXT UNIQUE,
+
+
+        valor TEXT
+
+
+    );
+
+
+    INSERT INTO configuracoes_mundo
+
+    (nome,valor)
+
+    VALUES
+
+    ('nome_mundo','World Engine'),
+
+    ('versao','1.0.0')
+
+    ON CONFLICT(nome)
+
+    DO NOTHING;
+
+    `
+
+},
+
+
+{
+    version: 23,
+
+    name: "Criar eventos globais",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS eventos_globais(
+
+        id SERIAL PRIMARY KEY,
+
+
+        tipo TEXT,
+
+
+        descricao TEXT,
+
+
+        importancia INTEGER DEFAULT 1,
+
+
+        criado_em TIMESTAMP DEFAULT NOW()
+
+    );
+
+    `
+
 }];
 
 
