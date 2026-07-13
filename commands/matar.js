@@ -1,12 +1,10 @@
 const { SlashCommandBuilder } = require("discord.js");
 
-const XP = require("../systems/xp");
-const Mundo = require("../systems/mundo");
 const database = require("../database/database");
 
+const Experiencia = require("../systems/experiencia");
 
-
-const DONO_ID = process.env.DONO_ID;
+const EventoMundo = require("../systems/eventoMundo");
 
 
 
@@ -21,127 +19,45 @@ data: new SlashCommandBuilder()
 .setName("matar")
 
 .setDescription(
-"Registra uma morte no mundo."
+"Registra a derrota de um monstro."
 )
 
-
-
-
-
-.addIntegerOption(option =>
+.addStringOption(option =>
 
 option
 
 .setName("personagem")
 
 .setDescription(
-"ID do personagem responsável."
+"ID do personagem."
 )
 
 .setRequired(true)
 
 )
-
-
-
-
 
 .addStringOption(option =>
 
 option
 
-.setName("alvo")
+.setName("monstro")
 
 .setDescription(
-"Nome do alvo morto."
+"Nome do monstro derrotado."
 )
 
 .setRequired(true)
 
 )
-
-
-
-
 
 .addStringOption(option =>
 
 option
 
-.setName("tipo_alvo")
+.setName("nivel")
 
 .setDescription(
-"Tipo do alvo."
-)
-
-.setRequired(true)
-
-.addChoices(
-
-{
-name:"Monstro",
-value:"monstro"
-},
-
-{
-name:"Humano",
-value:"humano"
-},
-
-{
-name:"Jogador",
-value:"jogador"
-},
-
-{
-name:"Criatura",
-value:"criatura"
-},
-
-{
-name:"Deus",
-value:"deus"
-},
-
-{
-name:"Entidade",
-value:"entidade"
-}
-
-)
-
-)
-
-
-
-
-
-.addIntegerOption(option =>
-
-option
-
-.setName("nivel_alvo")
-
-.setDescription(
-"Nível aproximado do alvo."
-)
-
-.setRequired(true)
-
-)
-
-
-
-
-
-.addStringOption(option =>
-
-option
-
-.setName("raridade")
-
-.setDescription(
-"Raridade do alvo."
+"Nível da criatura."
 )
 
 .setRequired(true)
@@ -154,18 +70,8 @@ value:"comum"
 },
 
 {
-name:"Incomum",
-value:"incomum"
-},
-
-{
 name:"Raro",
 value:"raro"
-},
-
-{
-name:"Épico",
-value:"epico"
 },
 
 {
@@ -174,74 +80,18 @@ value:"lendario"
 },
 
 {
-name:"Chefe",
-value:"chefe"
+name:"Ancestral",
+value:"ancestral"
 },
 
 {
-name:"Entidade",
-value:"entidade"
+name:"Dragão",
+value:"dragao"
 }
 
 )
 
-)
-
-
-
-
-
-.addStringOption(option =>
-
-option
-
-.setName("forma_morte")
-
-.setDescription(
-"Como o alvo morreu."
-)
-
-.setRequired(true)
-
-)
-
-
-
-
-
-.addStringOption(option =>
-
-option
-
-.setName("local")
-
-.setDescription(
-"Onde aconteceu."
-)
-
-.setRequired(false)
-
-)
-
-
-
-
-
-.addStringOption(option =>
-
-option
-
-.setName("descricao")
-
-.setDescription(
-"Descrição adicional."
-)
-
-.setRequired(false)
-
 ),
-
-
 
 
 
@@ -251,22 +101,65 @@ async execute(interaction){
 
 
 
-if(
 
-interaction.user.id !== DONO_ID
 
-){
+const personagem_id = interaction.options.getString(
+"personagem"
+);
+
+
+const monstro = interaction.options.getString(
+"monstro"
+);
+
+
+const nivel = interaction.options.getString(
+"nivel"
+);
+
+
+
+
+
+
+const jogador = await database.buscarUm(
+
+`
+
+SELECT *
+
+FROM jogadores
+
+WHERE id=$1
+
+`,
+
+[
+
+personagem_id
+
+]
+
+);
+
+
+
+
+
+
+if(!jogador){
 
 
 return interaction.reply({
 
 content:
 
-"❌ Apenas o mestre pode usar esse comando.",
+"❌ Personagem não encontrado.",
 
 ephemeral:true
 
 });
+
 
 
 }
@@ -276,102 +169,23 @@ ephemeral:true
 
 
 
-const personagem =
 
-interaction.options.getInteger(
-"personagem"
-);
+const recompensa = {
 
 
-
-const alvo =
-
-interaction.options.getString(
-"alvo"
-);
+comum:50,
 
 
-
-const tipo =
-
-interaction.options.getString(
-"tipo_alvo"
-);
+raro:200,
 
 
-
-const nivel =
-
-interaction.options.getInteger(
-"nivel_alvo"
-);
+lendario:1000,
 
 
-
-const raridade =
-
-interaction.options.getString(
-"raridade"
-);
+ancestral:5000,
 
 
-
-const forma =
-
-interaction.options.getString(
-"forma_morte"
-);
-
-
-
-const local =
-
-interaction.options.getString(
-"local"
-)
-
-|| "desconhecido";
-
-
-
-
-const descricao =
-
-interaction.options.getString(
-"descricao"
-)
-
-|| "Nenhuma descrição.";
-
-
-
-
-
-
-
-const multiplicadores = {
-
-
-
-comum:1,
-
-
-incomum:2,
-
-
-raro:5,
-
-
-epico:10,
-
-
-lendario:25,
-
-
-chefe:50,
-
-
-entidade:100
+dragao:20000
 
 
 };
@@ -382,11 +196,7 @@ entidade:100
 
 
 
-const multiplicador =
-
-multiplicadores[raridade]
-
-|| 1;
+const xp = recompensa[nivel];
 
 
 
@@ -394,105 +204,11 @@ multiplicadores[raridade]
 
 
 
-const xpRecebido = Math.floor(
-
-nivel *
-
-50 *
-
-multiplicador
-
-);
-
-
-
-
-
-
-
-
-await XP.adicionarXP(
-
-personagem,
-
-xpRecebido
-
-);
-
-
-
-
-
-
-
-await database.executar(
-
-`
-
-UPDATE estatisticas_combate
-
-SET
-
-combates = combates + 1,
-
-mortes_causadas = mortes_causadas + 1
-
-WHERE personagem_id=$1
-
-`,
-
-[
-
-personagem
-
-]
-
-);
-
-
-
-
-
-
-
-
-await database.executar(
-
-`
-
-INSERT INTO eventos
-
-(
+const resultado = await Experiencia.adicionarXP(
 
 personagem_id,
 
-tipo,
-
-descricao,
-
-resultado,
-
-xp_recebido
-
-)
-
-VALUES($1,$2,$3,$4,$5)
-
-`,
-
-[
-
-personagem,
-
-"morte",
-
-`${alvo} foi morto: ${forma}`,
-
-"vitória",
-
-xpRecebido
-
-]
+xp
 
 );
 
@@ -502,109 +218,54 @@ xpRecebido
 
 
 
-await Mundo.registrarMemoria(
+await EventoMundo.registrarEvento(
 
-personagem,
+personagem_id,
 
-"morte_causada",
+"combate",
+
+`Derrotou ${monstro}.`,
+
+nivel === "dragao" ? 100 : 20,
+
+{
+
+respeito:
+nivel === "dragao" ? 50 : 5,
+
+interesse:
+nivel === "dragao" ? 30 : 5
+
+}
+
+);
+
+
+
+
+
+
+
+await interaction.reply(
 
 `
 
-Alvo: ${alvo}
-
-Tipo: ${tipo}
-
-Forma: ${forma}
-
-Local: ${local}
-
-Descrição: ${descricao}
-
-`,
-
-5
-
-);
+⚔️ **Vitória registrada!**
 
 
+Monstro:
+${monstro}
 
 
+XP recebido:
+${xp}
 
 
-
-let comentario = await Mundo.comentarEvento(
-
-personagem,
-
-"vitoria"
-
-);
+Nível atual:
+${resultado.nivel}
 
 
-
-
-
-
-
-
-return interaction.reply(
-
-`
-
-☠️ **Morte registrada**
-
-━━━━━━━━━━━━━━
-
-⚔️ Personagem:
-
-${personagem}
-
-
-💀 Alvo:
-
-${alvo}
-
-
-🧬 Tipo:
-
-${tipo}
-
-
-⭐ Nível do alvo:
-
-${nivel}
-
-
-🏆 Raridade:
-
-${raridade}
-
-
-🩸 Forma da morte:
-
-${forma}
-
-
-📍 Local:
-
-${local}
-
-
-📜 Descrição:
-
-${descricao}
-
-
-⭐ XP recebido:
-
-${xpRecebido}
-
-
-━━━━━━━━━━━━━━
-
-🌍 **O Mundo diz:**
-
-"${comentario}"
+${resultado.subiu ? "🌟 Você evoluiu!" : ""}
 
 `
 
