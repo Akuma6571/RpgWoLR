@@ -22,8 +22,6 @@ alteracoes = {}
 
 
 
-// Garante que o jogador possui relação
-
 await MundoRelacao.criarRelacao(
 
 personagem_id
@@ -34,8 +32,6 @@ personagem_id
 
 
 
-
-// Altera relação do Mundo com o personagem
 
 for(const campo in alteracoes){
 
@@ -60,7 +56,6 @@ alteracoes[campo]
 
 
 
-// Cria memória do acontecimento
 
 await MundoRelacao.registrarMemoria(
 
@@ -79,8 +74,6 @@ importancia
 
 
 
-
-// Faz o Mundo reagir ao acontecimento
 
 const fala = await ReacaoMundo.reagirEvento(
 
@@ -133,15 +126,30 @@ nivel
 
 let respeito = 2;
 
+let categoria = "vitoria";
+
+
+
 
 
 if(nivel === "raro") respeito = 5;
 
+
 if(nivel === "lendario") respeito = 15;
+
 
 if(nivel === "ancestral") respeito = 30;
 
-if(nivel === "dragao") respeito = 50;
+
+if(nivel === "dragao"){
+
+respeito = 50;
+
+categoria = "dragao";
+
+}
+
+
 
 
 
@@ -152,7 +160,7 @@ return await registrarEvento(
 
 personagem_id,
 
-"combate",
+categoria,
 
 `Derrotou a criatura: ${monstro}`,
 
