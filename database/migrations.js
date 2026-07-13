@@ -268,8 +268,6 @@ const migrations = [
 
     `
 },
-
-
 {
     version: 8,
 
@@ -317,8 +315,13 @@ const migrations = [
 
         interesse INTEGER DEFAULT 0,
 
+        respeito INTEGER DEFAULT 0,
 
-        titulo_oculto TEXT,
+        irritacao INTEGER DEFAULT 0,
+
+        curiosidade INTEGER DEFAULT 0,
+
+        diversao INTEGER DEFAULT 0,
 
 
         interferencias INTEGER DEFAULT 0,
@@ -359,6 +362,7 @@ const migrations = [
 
         tipo TEXT,
 
+
         descricao TEXT,
 
 
@@ -380,7 +384,8 @@ const migrations = [
     );
 
     `
-}
+},
+
 
 {
     version: 11,
@@ -393,15 +398,18 @@ const migrations = [
 
         id SERIAL PRIMARY KEY,
 
+
         personagem_id INTEGER NOT NULL,
 
 
         nome TEXT,
 
+
         especie TEXT,
 
 
         nivel INTEGER DEFAULT 1,
+
 
         xp BIGINT DEFAULT 0,
 
@@ -472,54 +480,6 @@ const migrations = [
         FOREIGN KEY(personagem_id)
 
         REFERENCES personagens(id)
-
-        ON DELETE CASCADE
-
-    );
-
-    `
-},
-
-
-{
-    version: 13,
-
-    name: "Criar memória do Mundo",
-
-    sql: `
-
-    CREATE TABLE IF NOT EXISTS memoria_mundo(
-
-        id SERIAL PRIMARY KEY,
-
-
-        personagem_id INTEGER NOT NULL,
-
-
-        evento TEXT,
-
-
-        importancia INTEGER DEFAULT 1,
-
-
-        comentario TEXT,
-
-
-        criado_em TIMESTAMP DEFAULT NOW(),
-
-
-        FOREIGN KEY(personagem_id)
-
-        REFERENCES personagens(id)
-
-        ON DELETE CASCADE
-
-    );
-
-    `
-},
-
-
 {
     version: 14,
 
@@ -666,11 +626,13 @@ const migrations = [
 
         criado_em TIMESTAMP DEFAULT NOW()
 
-
     );
 
     `
-}{
+},
+
+
+{
     version: 18,
 
     name: "Criar estatísticas de combate",
@@ -684,14 +646,18 @@ const migrations = [
 
         combates INTEGER DEFAULT 0,
 
+
         vitorias INTEGER DEFAULT 0,
 
+
         derrotas INTEGER DEFAULT 0,
+
 
         fugas INTEGER DEFAULT 0,
 
 
         mortes_causadas INTEGER DEFAULT 0,
+
 
         mortes_sofridas INTEGER DEFAULT 0,
 
@@ -746,46 +712,7 @@ const migrations = [
 
         FOREIGN KEY(personagem_id)
 
-        REFERENCES personagens(id)
-
-        ON DELETE CASCADE
-
-    );
-
-    `
-},
-
-
-{
-    version: 20,
-
-    name: "Criar exclusão permanente",
-
-    sql: `
-
-    CREATE TABLE IF NOT EXISTS personagens_excluidos(
-
-        id SERIAL PRIMARY KEY,
-
-
-        nome TEXT,
-
-
-        antigo_id INTEGER,
-
-
-        motivo TEXT,
-
-
-        excluido_em TIMESTAMP DEFAULT NOW()
-
-    );
-
-    `
-},
-
-
-{
+       {
     version: 21,
 
     name: "Criar limites dos atributos",
@@ -801,7 +728,6 @@ const migrations = [
 
 
         limite BIGINT
-
 
     );
 
@@ -858,7 +784,6 @@ const migrations = [
 
         valor TEXT
 
-
     );
 
 
@@ -908,24 +833,34 @@ const migrations = [
 
     `
 
-}];
+}
+
+];
+
 
 
 
 async function verificarExecutada(version){
 
+
     const resultado = await database.buscarUm(
 
         "SELECT version FROM schema_version WHERE version=$1",
 
-        [version]
+        [
+
+            version
+
+        ]
 
     );
 
 
-    return resultado !== null;
+    return resultado !== undefined;
 
 }
+
+
 
 
 
@@ -939,111 +874,4 @@ async function registrar(migration){
 
         INSERT INTO schema_version
 
-        (version,nome)
-
-        VALUES($1,$2)
-
-        `,
-
-        [
-
-            migration.version,
-
-            migration.name
-
-        ]
-
-    );
-
-}
-
-
-
-
-
-async function executar(){
-
-
-    logger.info(
-
-        "🌍 Verificando estrutura do banco..."
-
-    );
-
-
-
-    for(const migration of migrations){
-
-
-
-        const existe = await verificarExecutada(
-
-            migration.version
-
-        );
-
-
-
-        if(existe)
-
-            continue;
-
-
-
-        logger.info(
-
-            "Executando: "
-
-            + migration.name
-
-        );
-
-
-
-        await database.executar(
-
-            migration.sql
-
-        );
-
-
-
-        await registrar(
-
-            migration
-
-        );
-
-
-
-        logger.sucesso(
-
-            "Concluído: "
-
-            + migration.name
-
-        );
-
-
-    }
-
-
-
-    logger.sucesso(
-
-        "🌍 Banco preparado."
-
-    );
-
-
-}
-
-
-
-
-
-module.exports = {
-
-    executar
-
-};
+        (
