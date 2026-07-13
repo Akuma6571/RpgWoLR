@@ -2,7 +2,7 @@ const {
     SlashCommandBuilder
 } = require("discord.js");
 
-const db = require("../Database/database");
+const db = require("../database/database");
 
 
 module.exports = {
@@ -25,122 +25,105 @@ module.exports = {
 
 
 
-        db.get(
-
-            "SELECT id FROM jogadores WHERE id = ?",
-
-            [userId],
-
-            async (err, row) => {
+        try {
 
 
-                if (err) {
+            const existente = await db.query(
 
-                    console.error(err);
+                "SELECT id FROM jogadores WHERE id = $1",
 
-                    await interaction.reply({
+                [userId]
 
-                        content:
-                        "🌍 As leis do mundo falharam ao tentar reconhecer sua existência.",
-
-                        ephemeral: true
-
-                    });
-
-                    return;
-
-                }
+            );
 
 
 
-                if (row) {
+            if (existente.rows.length > 0) {
 
 
-                    await interaction.reply({
+                await interaction.reply({
 
-                        content:
-                        "🌍 O mundo já reconhece sua existência. Sua ficha já foi criada.",
+                    content:
+                    "🌍 O mundo já reconhece sua existência. Sua ficha já foi criada.",
 
-                        ephemeral: true
+                    ephemeral: true
 
-                    });
-
-
-                    return;
-
-                }
+                });
 
 
-
-                db.run(
-
-                    `
-
-                    INSERT INTO jogadores
-
-                    (
-
-                    id,
-                    nome
-
-                    )
-
-                    VALUES
-
-                    (?,?)
-
-                    `,
-
-                    [
-
-                    userId,
-                    username
-
-                    ],
-
-
-                    async (err) => {
-
-
-                        if (err) {
-
-                            console.error(err);
-
-
-                            await interaction.reply({
-
-                                content:
-                                "🌍 As leis do mundo foram perturbadas. Sua ficha não pôde ser criada.",
-
-                                ephemeral: true
-
-                            });
-
-
-                            return;
-
-                        }
-
-
-
-                        await interaction.reply({
-
-                            content:
-                            "🌍 O mundo reconheceu sua presença. Sua jornada começa agora.",
-
-                            ephemeral: true
-
-                        });
-
-
-                    }
-
-                );
-
+                return;
 
             }
 
-        );
+
+
+            await db.query(
+
+                `
+
+                INSERT INTO jogadores
+
+                (
+
+                    id,
+
+                    nome
+
+                )
+
+                VALUES
+
+                (
+
+                    $1,
+
+                    $2
+
+                )
+
+                `,
+
+
+                [
+
+                    userId,
+
+                    username
+
+                ]
+
+            );
+
+
+
+            await interaction.reply({
+
+                content:
+                "🌍 O mundo reconheceu sua presença. Sua jornada começa agora.",
+
+                ephemeral: true
+
+            });
+
+
+
+        } catch (error) {
+
+
+            console.error(error);
+
+
+            await interaction.reply({
+
+                content:
+                "🌍 As leis do mundo foram perturbadas. Sua ficha não pôde ser criada.",
+
+                ephemeral: true
+
+            });
+
+
+        }
 
 
     }
