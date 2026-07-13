@@ -97,9 +97,8 @@ value:"dragao"
 
 
 
+
 async execute(interaction){
-
-
 
 
 
@@ -122,17 +121,20 @@ const nivel = interaction.options.getString(
 
 
 
+
 const jogador = await database.buscarUm(
 
 `
 
 SELECT *
 
-FROM jogadores
+FROM personagens
 
 WHERE id=$1
 
-`,
+`
+
+,
 
 [
 
@@ -147,7 +149,9 @@ personagem_id
 
 
 
+
 if(!jogador){
+
 
 
 return interaction.reply({
@@ -159,7 +163,6 @@ content:
 ephemeral:true
 
 });
-
 
 
 }
@@ -204,6 +207,7 @@ const xp = recompensa[nivel];
 
 
 
+
 const resultado = await Experiencia.adicionarXP(
 
 personagem_id,
@@ -211,7 +215,6 @@ personagem_id,
 xp
 
 );
-
 
 
 
@@ -235,41 +238,85 @@ nivel
 
 
 
-await interaction.reply(
+let mensagem =
 
 `
 
 ⚔️ **Vitória registrada!**
 
 
-Monstro:
+━━━━━━━━━━━━━━
+
+
+👹 **Criatura derrotada**
 
 ${monstro}
 
 
-
-XP recebido:
+⭐ **XP recebido**
 
 ${xp}
 
 
-
-Nível atual:
+📈 **Nível atual**
 
 ${resultado.nivel}
 
+`;
 
 
-${resultado.subiu ? "🌟 Você evoluiu!" : ""}
 
 
 
-🌍 **O Mundo diz:**
 
+
+if(resultado.subiu){
+
+
+
+mensagem +=
+
+`
+
+🌟 **EVOLUÇÃO!**
+
+O personagem alcançou um novo nível.
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+mensagem +=
+
+`
+
+🌎 **O Mundo observa...**
 
 "${falaMundo}"
 
-`
+
+━━━━━━━━━━━━━━
+
+`;
+
+
+
+
+
+
+
+await interaction.reply(
+
+mensagem
 
 );
 
