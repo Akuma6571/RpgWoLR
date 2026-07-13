@@ -663,6 +663,16 @@ personagem.id
 
 module.exports = {
 
+    module.exports = {
+
     data: comandoFicha.data,
+
+    execute: comandoFicha.execute,
+
+    processarBotao,
+
+    criarBotoes
+
+};
 
    
