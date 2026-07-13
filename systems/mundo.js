@@ -1,6 +1,60 @@
+const database = require("../database/database");
+
 const frases = require("./frases_mundo");
 
-const database = require("../database/database");
+
+
+
+
+const Mundo = {
+
+
+
+nome: "O Mundo",
+
+
+
+humor: "neutro",
+
+
+
+personalidade: {
+
+
+
+debochado: 80,
+
+
+
+curioso: 90,
+
+
+
+orgulhoso: 70,
+
+
+
+paciente: 60,
+
+
+
+cruel: 40,
+
+
+
+compassivo: 30
+
+
+
+}
+
+
+
+};
+
+
+
+
 
 
 
@@ -9,20 +63,243 @@ const database = require("../database/database");
 function escolher(lista){
 
 
-    if(!lista || lista.length === 0){
 
-        return "O Mundo observa em silêncio.";
-
-    }
+if(!lista || lista.length === 0){
 
 
-    return lista[
 
-        Math.floor(Math.random() * lista.length)
+return "O Mundo observa em silêncio.";
 
-    ];
+
 
 }
+
+
+
+return lista[
+
+Math.floor(Math.random() * lista.length)
+
+];
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function definirHumor(){
+
+
+
+const numero = Math.random();
+
+
+
+if(numero < 0.20){
+
+
+
+Mundo.humor = "divertido";
+
+
+
+}
+
+
+
+else if(numero < 0.40){
+
+
+
+Mundo.humor = "irritado";
+
+
+
+}
+
+
+
+else if(numero < 0.55){
+
+
+
+Mundo.humor = "curioso";
+
+
+
+}
+
+
+
+else if(numero < 0.70){
+
+
+
+Mundo.humor = "impressionado";
+
+
+
+}
+
+
+
+else{
+
+
+
+Mundo.humor = "neutro";
+
+
+
+}
+
+
+
+return Mundo.humor;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function buscarRelacao(personagemId){
+
+
+
+return await database.buscarUm(
+
+
+
+`
+
+SELECT *
+
+FROM mundo_personagem
+
+WHERE personagem_id=$1
+
+
+
+`,
+
+
+[
+
+personagemId
+
+]
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function analisarRelacao(relacao){
+
+
+
+if(!relacao){
+
+
+
+return "desconhecido";
+
+
+
+}
+
+
+
+
+
+
+if(relacao.respeito >= 80){
+
+
+
+return "respeitado";
+
+
+
+}
+
+
+
+
+
+if(relacao.irritacao >= 80){
+
+
+
+return "irritante";
+
+
+
+}
+
+
+
+
+
+if(relacao.diversao >= 80){
+
+
+
+return "divertido";
+
+
+
+}
+
+
+
+
+
+if(relacao.curiosidade >= 80){
+
+
+
+return "interessante";
+
+
+
+}
+
+
+
+
+
+return "normal";
+
+
+
+}
+
+
 
 
 
@@ -36,90 +313,33 @@ personagemId,
 
 evento,
 
-dados = {}
+dados={}
 
 ){
 
 
 
-    let categoria = "vitoria";
+const relacao = await buscarRelacao(
 
+personagemId
 
-
-    if(evento === "derrota")
-        categoria = "derrota";
-
-
-    if(evento === "morte")
-        categoria = "morte";
-
-
-    if(evento === "sorte")
-        categoria = "sorte";
-
-
-    if(evento === "azar")
-        categoria = "azar";
-
-
-    if(evento === "chefe")
-        categoria = "chefe_derrotado";
-
-
-    if(evento === "entidade")
-        categoria = "entidade_derrotada";
+);
 
 
 
 
 
+const sentimento = analisarRelacao(
 
-    let relacao = await buscarRelacao(
+relacao
 
-        personagemId
-
-    );
-
+);
 
 
 
 
 
-    let chanceEspecial = Math.random();
-
-
-
-
-    // Jogadores que chamam muita atenção recebem respostas diferentes
-
-
-    if(relacao){
-
-
-        if(relacao.respeito > 70 && chanceEspecial < 0.3){
-
-            return "Interessante... finalmente algo digno da minha atenção.";
-
-        }
-
-
-
-        if(relacao.irritacao > 70 && chanceEspecial < 0.3){
-
-            return "Você realmente está se esforçando para testar minha paciência.";
-
-        }
-
-
-
-        if(relacao.diversao > 70 && chanceEspecial < 0.3){
-
-            return "Confesso que você é uma das poucas coisas que ainda conseguem me entreter.";
-
-        }
-
-
-    }
+const humor = definirHumor();
 
 
 
@@ -127,11 +347,91 @@ dados = {}
 
 
 
-    return escolher(
+let lista;
 
-        frases[categoria]
 
-    );
+
+switch(evento){
+
+
+
+case "vitoria":
+
+
+
+lista = frases.vitoria;
+
+break;
+
+
+
+case "derrota":
+
+
+
+lista = frases.derrota;
+
+break;
+
+
+
+case "morte":
+
+
+
+lista = frases.morte;
+
+break;
+
+
+
+case "sorte":
+
+
+
+lista = frases.sorte;
+
+break;
+
+
+
+case "azar":
+
+
+
+lista = frases.azar;
+
+break;
+
+
+
+case "chefe":
+
+
+
+lista = frases.chefe_derrotado;
+
+break;
+
+
+
+case "entidade":
+
+
+
+lista = frases.entidade_derrotada;
+
+break;
+
+
+
+default:
+
+
+
+lista = frases.vitoria;
+
+
 
 }
 
@@ -139,77 +439,27 @@ dados = {}
 
 
 
-async function criarRelacao(
 
-personagemId
 
-){
+let resposta = escolher(lista);
 
 
 
-    await database.executar(
-
-    `
-
-    INSERT INTO mundo_personagem
-
-    (
-
-    personagem_id,
-
-    interesse,
-
-    respeito,
-
-    irritacao,
-
-    curiosidade,
-
-    diversao,
-
-    interferencias,
-
-    afinidade
-
-    )
 
 
-    VALUES
-
-    (
-
-    $1,
-
-    0,
-
-    0,
-
-    0,
-
-    0,
-
-    0,
-
-    0,
-
-    'neutro'
-
-    )
 
 
-    ON CONFLICT DO NOTHING
+
+if(sentimento === "respeitado"){
 
 
-    `,
 
+resposta =
 
-    [
+"Interessante... devo admitir que você chamou minha atenção. " +
 
-    personagemId
+resposta;
 
-    ]
-
-    );
 
 
 }
@@ -221,8 +471,173 @@ personagemId
 
 
 
+if(sentimento === "irritante"){
 
-async function buscarRelacao(
+
+
+resposta =
+
+"Você realmente insiste em testar meus limites. " +
+
+resposta;
+
+
+
+}
+
+
+
+
+
+
+
+
+if(humor === "divertido"){
+
+
+
+resposta +=
+
+" Confesso que isso foi divertido de observar.";
+
+
+
+}
+
+
+
+
+
+
+
+
+if(humor === "impressionado"){
+
+
+
+resposta +=
+
+" Raramente algo consegue me surpreender.";
+
+
+
+}
+
+
+
+
+
+
+
+return resposta;
+
+
+
+}
+
+
+
+
+
+
+
+async function registrarMemoria(
+
+personagemId,
+
+tipo,
+
+descricao,
+
+importancia = 1
+
+){
+
+
+
+try{
+
+
+
+await database.executar(
+
+`
+
+INSERT INTO memorias_mundo
+
+(
+
+personagem_id,
+
+tipo,
+
+descricao,
+
+importancia
+
+)
+
+VALUES
+
+(
+
+$1,
+
+$2,
+
+$3,
+
+$4
+
+)
+
+`,
+
+[
+
+personagemId,
+
+tipo,
+
+descricao,
+
+importancia
+
+]
+
+);
+
+
+
+}catch(error){
+
+
+
+console.error(
+
+"Erro ao registrar memória do Mundo:",
+
+error.message
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function obterMemorias(
 
 personagemId
 
@@ -230,27 +645,56 @@ personagemId
 
 
 
-    return await database.buscarUm(
-
-    `
-
-    SELECT *
-
-    FROM mundo_personagem
-
-    WHERE personagem_id=$1
+try{
 
 
-    `,
+
+return await database.buscarTodos(
+
+`
+
+SELECT *
+
+FROM memorias_mundo
+
+WHERE personagem_id=$1
+
+ORDER BY importancia DESC
 
 
-    [
 
-    personagemId
+`,
 
-    ]
+[
 
-    );
+personagemId
+
+]
+
+);
+
+
+
+}catch(error){
+
+
+
+console.error(
+
+"Erro ao buscar memórias:",
+
+error.message
+
+);
+
+
+
+return [];
+
+
+
+}
+
 
 
 }
@@ -275,285 +719,21 @@ valor
 
 
 
-    const camposPermitidos = [
+const camposPermitidos = [
 
 
-        "interesse",
 
-        "respeito",
+"interesse",
 
-        "irritacao",
+"respeito",
 
-        "curiosidade",
+"irritacao",
 
-        "diversao",
+"curiosidade",
 
-        "interferencias"
+"diversao",
 
-
-    ];
-
-
-
-
-
-    if(!camposPermitidos.includes(campo)){
-
-        return;
-
-    }
-
-
-
-
-
-
-
-    await database.executar(
-
-    `
-
-    UPDATE mundo_personagem
-
-    SET ${campo} = ${campo} + $1
-
-    WHERE personagem_id=$2
-
-
-    `,
-
-
-    [
-
-    valor,
-
-    personagemId
-
-    ]
-
-    );
-
-
-}
-
-
-
-
-
-
-
-
-
-async function registrarMemoria(
-
-personagemId,
-
-tipo,
-
-descricao,
-
-importancia = 1
-
-){
-
-
-
-    await database.executar(
-
-    `
-
-    INSERT INTO memorias_mundo
-
-    (
-
-    personagem_id,
-
-    tipo,
-
-    descricao,
-
-    importancia
-
-    )
-
-
-    VALUES
-
-    (
-
-    $1,
-
-    $2,
-
-    $3,
-
-    $4
-
-    )
-
-
-    `,
-
-
-    [
-
-    personagemId,
-
-    tipo,
-
-    descricao,
-
-    importancia
-
-    ]
-
-    );
-
-
-}
-
-
-
-
-
-
-
-
-
-async function obterMemorias(
-
-personagemId
-
-){
-
-
-
-    return await database.buscarTodos(
-
-    `
-
-    SELECT *
-
-    FROM memorias_mundo
-
-    WHERE personagem_id=$1
-
-    ORDER BY importancia DESC
-
-
-    `,
-
-
-    [
-
-    personagemId
-
-    ]
-
-    );
-
-
-}
-
-
-
-
-
-
-
-
-
-async function tentarInterferir(
-
-personagemId,
-
-tipo
-
-){
-
-
-
-    let relacao = await buscarRelacao(
-
-        personagemId
-
-    );
-
-
-
-
-
-    if(!relacao){
-
-        return false;
-
-    }
-
-
-
-
-
-
-    let chance = 0;
-
-
-
-
-
-    if(tipo === "ajuda"){
-
-        chance = relacao.interesse / 200;
-
-    }
-
-
-
-
-
-    if(tipo === "punicao"){
-
-        chance = relacao.irritacao / 200;
-
-    }
-
-
-
-
-
-
-    return Math.random() < chance;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-async function mentir(){
-
-
-
-
-const respostas = [
-
-
-"Talvez."
-
-,
-
-"Eu poderia responder... mas qual seria a graça?",
-
-"Essa informação não pertence a você.",
-
-"Tenho uma resposta, mas prefiro observar sua descoberta.",
-
-"Quem disse que eu sou obrigado a dizer a verdade?"
+"interferencias"
 
 
 
@@ -563,7 +743,69 @@ const respostas = [
 
 
 
-return escolher(respostas);
+
+
+if(!camposPermitidos.includes(campo)){
+
+
+
+return;
+
+
+
+}
+
+
+
+
+
+
+
+try{
+
+
+
+await database.executar(
+
+`
+
+UPDATE mundo_personagem
+
+SET ${campo} = ${campo} + $1
+
+WHERE personagem_id=$2
+
+
+
+`,
+
+[
+
+valor,
+
+personagemId
+
+]
+
+);
+
+
+
+}catch(error){
+
+
+
+console.error(
+
+"Erro ao alterar relação do Mundo:",
+
+error.message
+
+);
+
+
+
+}
 
 
 
@@ -577,31 +819,195 @@ return escolher(respostas);
 
 
 
-module.exports = {
+async function criarRelacao(
+
+personagemId
+
+){
 
 
-comentarEvento,
+
+try{
 
 
-criarRelacao,
+
+await database.executar(
+
+`
+
+INSERT INTO mundo_personagem
+
+(
+
+personagem_id
+
+)
+
+VALUES
+
+(
+
+$1
+
+)
+
+ON CONFLICT DO NOTHING
 
 
-buscarRelacao,
+
+`,
+
+[
+
+personagemId
+
+]
+
+);
 
 
-alterarRelacao,
+
+}catch(error){
 
 
-registrarMemoria,
+
+console.error(
+
+"Erro ao criar relação:",
+
+error.message
+
+);
 
 
-obterMemorias,
+
+}
 
 
-tentarInterferir,
+
+}
 
 
-mentir
 
 
-};
+
+
+
+
+
+async function registrarFeito(
+
+personagemId,
+
+feito,
+
+importancia
+
+){
+
+
+
+await registrarMemoria(
+
+personagemId,
+
+"feito",
+
+feito,
+
+importancia
+
+);
+
+
+
+
+
+
+
+await alterarRelacao(
+
+personagemId,
+
+"interesse",
+
+Math.floor(importancia / 2)
+
+);
+
+
+
+
+
+
+
+if(importancia >= 80){
+
+
+
+await alterarRelacao(
+
+personagemId,
+
+"respeito",
+
+10
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function lembrarAlgo(
+
+personagemId
+
+){
+
+
+
+const memorias = await obterMemorias(
+
+personagemId
+
+);
+
+
+
+
+
+if(memorias.length === 0){
+
+
+
+return null;
+
+
+
+}
+
+
+
+
+
+return memorias[0];
+
+
+
+}
+
+
+module.exports = Mundo;
