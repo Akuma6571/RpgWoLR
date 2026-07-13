@@ -3,7 +3,11 @@ const {
     EmbedBuilder
 } = require("discord.js");
 
+
 const database = require("../database/database");
+
+
+
 
 
 module.exports = {
@@ -36,7 +40,10 @@ module.exports = {
 
 
 
+
+
     async execute(interaction){
+
 
 
         const slot = interaction.options.getInteger(
@@ -44,7 +51,10 @@ module.exports = {
         );
 
 
+
         const usuario = interaction.user.id;
+
+
 
 
 
@@ -68,33 +78,7 @@ module.exports = {
 
                 slot
 
-            ]
-
-        );
-
-
-
-
-        if(!personagem){
-
-
-            return interaction.reply({
-
-                content:
-                "❌ Personagem não encontrado.",
-
-                ephemeral:true
-
-            });
-
-
-        }
-
-
-
-
-
-        const habilidades = await database.buscarTodos(
+            ]        const habilidades = await database.buscarTodos(
 
             `
 
@@ -112,7 +96,37 @@ module.exports = {
 
             ]
 
-        );        const embed = new EmbedBuilder()
+        );
+
+
+
+
+
+        const magias = await database.buscarTodos(
+
+            `
+
+            SELECT *
+
+            FROM magias
+
+            WHERE personagem_id=$1
+
+            `,
+
+            [
+
+                personagem.id
+
+            ]
+
+        );
+
+
+
+
+
+        const embed = new EmbedBuilder()
 
 
         .setTitle(
@@ -125,7 +139,9 @@ module.exports = {
         .setDescription(
 
 `
+
 ━━━━━━━━━━━━━━
+
 
 👤 **Nome:** ${personagem.nome}
 
@@ -150,19 +166,18 @@ module.exports = {
 
 
 ━━━━━━━━━━━━━━
+
 `
 
-        )
-
-
-
-        .addFields(
+        );        embed.addFields(
 
 
         {
 
             name:
+
             "📊 Estatísticas",
+
 
             value:
 
@@ -178,13 +193,16 @@ module.exports = {
 🌌 Aura: ${personagem.aura} | 🍀 Sorte: ${personagem.sorte}
 
 
-                 🎯 Chance Crítica: ${personagem.chancecritica}%
+🎯 **Chance Crítica: ${personagem.chancecritica}%**
 
 `,
 
             inline:false
 
         },
+
+
+
 
 
         {
@@ -221,15 +239,15 @@ module.exports = {
         }
 
 
-        );        // HABILIDADES
+        );        let textoHabilidades = "";
 
-        let textoHabilidades = "";
 
 
         if(habilidades.length === 0){
 
 
-            textoHabilidades = 
+            textoHabilidades =
+
             "Nenhuma habilidade aprendida.";
 
 
@@ -244,6 +262,7 @@ module.exports = {
                 `• **${habilidade.nome}**\n`;
 
 
+
                 if(habilidade.descricao){
 
 
@@ -251,8 +270,8 @@ module.exports = {
 
                     `  ${habilidade.descricao}\n`;
 
-
                 }
+
 
 
                 textoHabilidades +=
@@ -264,6 +283,7 @@ module.exports = {
 
 
         }
+
 
 
 
@@ -291,8 +311,6 @@ module.exports = {
 
 
 
-        // MAGIAS
-
         let textoMagias = "";
 
 
@@ -313,7 +331,6 @@ module.exports = {
 
                 textoMagias +=
 
-
                 `• **${magia.nome}**\n`;
 
 
@@ -325,16 +342,13 @@ module.exports = {
 
                     `  ${magia.descricao}\n`;
 
-
                 }
 
 
 
                 textoMagias +=
 
-
                 `  ⭐ XP: ${magia.xp} | Nível: ${magia.nivel}\n\n`;
-
 
 
             });
@@ -372,9 +386,7 @@ module.exports = {
 
 
 
-
         embed.setTimestamp();
-
 
 
 
@@ -391,7 +403,6 @@ module.exports = {
 
 
         const mensagem = await interaction.fetchReply();
-
 
 
 
@@ -421,31 +432,8 @@ module.exports = {
 
             ]
 
-        );        await database.executar(
-
-            `
-
-            UPDATE jogadores
-
-            SET mensagem_ficha=$1,
-
-            canal_ficha=$2
-
-            WHERE id=$3
-
-            `,
-
-            [
-
-                mensagem.id,
-
-                mensagem.channel.id,
-
-                personagem.id
-
-            ]
-
         );
+
 
 
     }
@@ -453,26 +441,25 @@ module.exports = {
 
 };
 
-
-
-
-
-        const magias = await database.buscarTodos(
-
-            `
-
-            SELECT *
-
-            FROM magias
-
-            WHERE personagem_id=$1
-
-            `,
-
-            [
-
-                personagem.id
-
-            ]
-
         );
+
+
+
+
+
+
+        if(!personagem){
+
+
+            return interaction.reply({
+
+                content:
+
+                "❌ Personagem não encontrado.",
+
+                ephemeral:true
+
+            });
+
+
+        }
