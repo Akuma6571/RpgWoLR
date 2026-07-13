@@ -8,48 +8,27 @@ const ReacaoMundo = require("./reacaoMundo");
 
 async function registrarEvento(
 
-personagem_id,
+    personagem_id,
 
-tipo,
+    tipo,
 
-descricao,
+    descricao,
 
-importancia,
+    importancia,
 
-alteracoes = {}
+    alteracoes = {}
 
 ){
 
 
 
-await MundoRelacao.criarRelacao(
+    // Garante que existe uma relação com o Mundo
 
-personagem_id
+    await MundoRelacao.criarRelacao(
 
-);
+        personagem_id
 
-
-
-
-
-
-for(const campo in alteracoes){
-
-
-
-await MundoRelacao.alterarRelacao(
-
-personagem_id,
-
-campo,
-
-alteracoes[campo]
-
-);
-
-
-
-}
+    );
 
 
 
@@ -57,48 +36,78 @@ alteracoes[campo]
 
 
 
-await MundoRelacao.registrarMemoria(
+    // Altera a relação do Mundo
 
-personagem_id,
-
-tipo,
-
-descricao,
-
-importancia
-
-);
+    for(const campo in alteracoes){
 
 
 
+        await MundoRelacao.alterarRelacao(
+
+            personagem_id,
+
+            campo,
+
+            alteracoes[campo]
+
+        );
 
 
-
-
-const fala = await ReacaoMundo.reagirEvento(
-
-personagem_id,
-
-tipo,
-
-{
-
-memoria: descricao,
-
-importancia: importancia,
-
-relacao: alteracoes
-
-}
-
-);
+    }
 
 
 
 
 
 
-return fala;
+
+    // Salva a memória do acontecimento
+
+    await MundoRelacao.registrarMemoria(
+
+        personagem_id,
+
+        tipo,
+
+        descricao,
+
+        importancia
+
+    );
+
+
+
+
+
+
+
+    // Faz o Mundo responder
+
+    const fala = await ReacaoMundo.reagirEvento(
+
+        personagem_id,
+
+        tipo,
+
+        {
+
+            memoria: descricao,
+
+            importancia: importancia,
+
+            relacao: alteracoes
+
+        }
+
+    );
+
+
+
+
+
+
+
+    return fala;
 
 
 
@@ -114,40 +123,19 @@ return fala;
 
 async function matouMonstro(
 
-personagem_id,
+    personagem_id,
 
-monstro,
+    monstro,
 
-nivel
+    nivel
 
 ){
 
 
 
-let respeito = 2;
+    let respeito = 2;
 
-let categoria = "vitoria";
-
-
-
-
-
-if(nivel === "raro") respeito = 5;
-
-
-if(nivel === "lendario") respeito = 15;
-
-
-if(nivel === "ancestral") respeito = 30;
-
-
-if(nivel === "dragao"){
-
-respeito = 50;
-
-categoria = "dragao";
-
-}
+    let categoria = "vitoria";
 
 
 
@@ -155,27 +143,65 @@ categoria = "dragao";
 
 
 
+    if(nivel === "raro")
 
-return await registrarEvento(
+        respeito = 5;
 
-personagem_id,
 
-categoria,
 
-`Derrotou a criatura: ${monstro}`,
 
-respeito,
 
-{
+    if(nivel === "lendario")
 
-respeito: respeito,
+        respeito = 15;
 
-interesse: Math.floor(respeito / 2)
 
-}
 
-);
 
+
+    if(nivel === "ancestral")
+
+        respeito = 30;
+
+
+
+
+
+    if(nivel === "dragao"){
+
+
+        respeito = 50;
+
+        categoria = "dragao";
+
+
+    }
+
+
+
+
+
+
+
+    return await registrarEvento(
+
+        personagem_id,
+
+        categoria,
+
+        `Derrotou a criatura: ${monstro}`,
+
+        respeito,
+
+        {
+
+            respeito: respeito,
+
+            interesse: Math.floor(respeito / 2)
+
+        }
+
+    );
 
 
 }
@@ -190,32 +216,31 @@ interesse: Math.floor(respeito / 2)
 
 async function morreu(
 
-personagem_id,
-
-motivo = "O Mundo observou sua morte."
+    personagem_id
 
 ){
 
 
 
-return await registrarEvento(
+    return await registrarEvento(
 
-personagem_id,
+        personagem_id,
 
-"morte",
+        "morte",
 
-motivo,
+        "O Mundo observou sua morte.",
 
-20,
+        20,
 
-{
+        {
 
-curiosidade: 5
+            curiosidade: 5,
 
-}
+            interesse: 5
 
-);
+        }
 
+    );
 
 
 }
@@ -230,34 +255,33 @@ curiosidade: 5
 
 async function evoluiu(
 
-personagem_id,
+    personagem_id,
 
-formaNova
+    formaNova
 
 ){
 
 
 
-return await registrarEvento(
+    return await registrarEvento(
 
-personagem_id,
+        personagem_id,
 
-"evolucao",
+        "evolucao",
 
-`Evoluiu para ${formaNova}.`,
+        `Evoluiu para ${formaNova}.`,
 
-50,
+        50,
 
-{
+        {
 
-interesse: 20,
+            respeito: 10,
 
-respeito: 10
+            interesse: 20
 
-}
+        }
 
-);
-
+    );
 
 
 }
@@ -272,32 +296,31 @@ respeito: 10
 
 async function aprendeuMagia(
 
-personagem_id,
+    personagem_id,
 
-magia
+    magia
 
 ){
 
 
 
-return await registrarEvento(
+    return await registrarEvento(
 
-personagem_id,
+        personagem_id,
 
-"magia",
+        "magia",
 
-`Aprendeu a magia ${magia}.`,
+        `Aprendeu a magia ${magia}.`,
 
-10,
+        10,
 
-{
+        {
 
-curiosidade: 5
+            curiosidade: 5
 
-}
+        }
 
-);
-
+    );
 
 
 }
@@ -312,77 +335,39 @@ curiosidade: 5
 
 async function magiaProibida(
 
-personagem_id,
+    personagem_id,
 
-magia
-
-){
-
-
-
-return await registrarEvento(
-
-personagem_id,
-
-"magia_proibida",
-
-`Obteve conhecimento da magia proibida: ${magia}.`,
-
-80,
-
-{
-
-interesse: 30,
-
-curiosidade: 20
-
-}
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-async function descobriuSegredo(
-
-personagem_id,
-
-segredo
+    magia
 
 ){
 
 
 
-return await registrarEvento(
+    return await registrarEvento(
 
-personagem_id,
+        personagem_id,
 
-"descoberta",
+        "magia_proibida",
 
-`Descobriu o segredo: ${segredo}.`,
+        `Aprendeu uma magia proibida: ${magia}.`,
 
-40,
+        50,
 
-{
+        {
 
-interesse: 15
+            curiosidade: 20,
+
+            irritacao: 10,
+
+            interesse: 15
+
+        }
+
+    );
+
 
 }
 
-);
-
-
-
-}
 
 
 
@@ -391,40 +376,39 @@ interesse: 15
 
 
 
+async function descobriuAlgo(
 
-async function encontrouDeus(
+    personagem_id,
 
-personagem_id,
-
-entidade
+    descoberta
 
 ){
 
 
 
-return await registrarEvento(
+    return await registrarEvento(
 
-personagem_id,
+        personagem_id,
 
-"deus",
+        "descoberta",
 
-`Encontrou a entidade divina: ${entidade}.`,
+        `Descobriu: ${descoberta}.`,
 
-100,
+        20,
 
-{
+        {
 
-interesse: 50,
+            curiosidade: 15,
 
-respeito: 30
+            interesse: 10
+
+        }
+
+    );
+
 
 }
 
-);
-
-
-
-}
 
 
 
@@ -433,37 +417,72 @@ respeito: 30
 
 
 
+async function nascimento(
 
-async function derrotouEntidade(
-
-personagem_id,
-
-entidade
+    personagem_id
 
 ){
 
 
 
-return await registrarEvento(
+    return await registrarEvento(
 
-personagem_id,
+        personagem_id,
 
-"entidade_derrotada",
+        "nascimento",
 
-`Derrotou a entidade: ${entidade}.`,
+        "Uma nova existência surgiu no mundo.",
 
-150,
+        10,
 
-{
+        {
 
-respeito: 100,
+            curiosidade: 5
 
-interesse: 50
+        }
+
+    );
+
 
 }
 
-);
 
+
+
+
+
+
+
+
+async function intervencao(
+
+    personagem_id,
+
+    motivo
+
+){
+
+
+
+    return await registrarEvento(
+
+        personagem_id,
+
+        "intervencao",
+
+        `O Mundo interferiu: ${motivo}.`,
+
+        100,
+
+        {
+
+            interferencias: 1,
+
+            interesse: 30
+
+        }
+
+    );
 
 
 }
@@ -479,25 +498,31 @@ interesse: 50
 module.exports = {
 
 
+    registrarEvento,
 
-registrarEvento,
 
-matouMonstro,
+    matouMonstro,
 
-morreu,
 
-evoluiu,
+    morreu,
 
-aprendeuMagia,
 
-magiaProibida,
+    evoluiu,
 
-descobriuSegredo,
 
-encontrouDeus,
+    aprendeuMagia,
 
-derrotouEntidade
 
+    magiaProibida,
+
+
+    descobriuAlgo,
+
+
+    nascimento,
+
+
+    intervencao
 
 
 };
