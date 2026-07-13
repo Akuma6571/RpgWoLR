@@ -1456,7 +1456,51 @@ return "O Mundo permanece em silêncio.";
 }
 
 
+function falar(categoria, tipo){
 
+return Frases.escolher(
+categoria,
+tipo
+);
+
+}
+
+
+
+
+
+function narrarEvento(categoria, tipo){
+
+const frase = Frases.escolher(
+categoria,
+tipo
+);
+
+
+return {
+
+mensagem: frase,
+categoria: categoria,
+tipo: tipo,
+data: new Date()
+
+};
+
+
+}
+
+
+
+
+
+function reagir(categoria, tipo){
+
+return Frases.escolher(
+categoria,
+tipo
+);
+
+}
 
 
 
@@ -1486,6 +1530,12 @@ Mundo.mentir = mentir;
 Mundo.esconderInformacao = esconderInformacao;
 
 Mundo.comandoMestre = comandoMestre;
+
+Mundo.falar = falar;
+
+Mundo.narrarEvento = narrarEvento;
+
+Mundo.reagir = reagir;
 
 
 module.exports = Mundo;
