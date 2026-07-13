@@ -75,7 +75,23 @@ importancia
 
 );
 
+const fala = await ReacaoMundo.reagirEvento(
 
+personagem_id,
+
+tipo,
+
+{
+
+memoria: descricao,
+
+importancia: importancia,
+
+relacao: alteracoes
+
+}
+
+);
 
 }
 
