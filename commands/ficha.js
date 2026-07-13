@@ -217,7 +217,7 @@ module.exports = {
 
 💪 Força: ${personagem.forca} | 🏃 Agilidade: ${personagem.agilidade}
 
-🔥 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
+🧗 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
 
 🧠 Inteligência: ${personagem.inteligencia} | 🎭 Carisma: ${personagem.carisma}
 
@@ -243,21 +243,21 @@ module.exports = {
             value:
 
 `
-🔮 Mágica: ${personagem.magica}%
+☄️ Mágica: ${personagem.magica}%
 
 🔥 Fogo: ${personagem.fogo}%
 
-🌎 Terra: ${personagem.terra}%
+🪨 Terra: ${personagem.terra}%
 
 🌪️ Ar: ${personagem.ar}%
 
-💧 Água: ${personagem.agua}%
+🌊 Água: ${personagem.agua}%
 
 ☀️ Luz: ${personagem.luz}%
 
 🌑 Escuridão: ${personagem.escuridao}%
 
-✨ Secundárias: ${personagem.secundarias}%
+🃏 Secundárias: ${personagem.secundarias}%
 
 `,
 
