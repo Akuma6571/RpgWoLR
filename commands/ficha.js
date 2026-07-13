@@ -12,55 +12,39 @@ const database = require("../Database/database");
 
 
 
-
-const fichasAtivas = new Map();
-
-
-
+// ===============================
+// BOTÕES
+// ===============================
 
 
 function criarBotoes(){
+
 
     return new ActionRowBuilder()
 
     .addComponents(
 
         new ButtonBuilder()
-
         .setCustomId("ficha_resumo")
-
         .setLabel("📊 Resumo")
-
         .setStyle(ButtonStyle.Primary),
 
 
-
         new ButtonBuilder()
-
         .setCustomId("ficha_aptidoes")
-
         .setLabel("✨ Aptidões")
-
         .setStyle(ButtonStyle.Primary),
 
 
-
         new ButtonBuilder()
-
         .setCustomId("ficha_habilidades")
-
         .setLabel("⚔️ Habilidades")
-
         .setStyle(ButtonStyle.Success),
 
 
-
         new ButtonBuilder()
-
         .setCustomId("ficha_magias")
-
         .setLabel("📖 Magias")
-
         .setStyle(ButtonStyle.Danger)
 
     );
@@ -69,6 +53,10 @@ function criarBotoes(){
 
 
 
+
+// ===============================
+// PÁGINA RESUMO
+// ===============================
 
 
 function paginaResumo(personagem){
@@ -86,7 +74,6 @@ function paginaResumo(personagem){
     .setDescription(
 
 `
-
 ━━━━━━━━━━━━━━
 
 
@@ -119,41 +106,41 @@ function paginaResumo(personagem){
 
 💪 Força: ${personagem.forca} | 🏃 Agilidade: ${personagem.agilidade}
 
-🧗 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
+🔥 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
 
 🧠 Inteligência: ${personagem.inteligencia} | 🎭 Carisma: ${personagem.carisma}
 
 🌌 Aura: ${personagem.aura} | 🍀 Sorte: ${personagem.sorte}
 
 
-🎯 **Chance Crítica: ${personagem.chancecritica}%**
+              🎯 Chance Crítica: ${personagem.chancecritica}%
+
+
+━━━━━━━━━━━━━━
 
 `
 
     )
 
-
     .setFooter({
 
         text:
-
         "🌍 Toda existência possui uma história."
 
     })
 
     .setTimestamp();
 
-
-}
-
-
-
+}// ===============================
+// PÁGINA APTIDÕES
+// ===============================
 
 
 function paginaAptidoes(personagem){
 
 
     return new EmbedBuilder()
+
 
     .setTitle(
 
@@ -165,7 +152,6 @@ function paginaAptidoes(personagem){
     .setDescription(
 
 `
-
 ☄️ Mágica: ${personagem.magica}%
 
 🔥 Fogo: ${personagem.fogo}%
@@ -186,7 +172,19 @@ function paginaAptidoes(personagem){
 
     );
 
-}function paginaHabilidades(habilidades){
+}
+
+
+
+
+
+
+// ===============================
+// PÁGINA HABILIDADES
+// ===============================
+
+
+function paginaHabilidades(habilidades){
 
 
     let texto = "";
@@ -201,7 +199,9 @@ function paginaAptidoes(personagem){
         "Nenhuma habilidade aprendida.";
 
 
+
     }else{
+
 
 
         habilidades.forEach(habilidade => {
@@ -220,6 +220,7 @@ function paginaAptidoes(personagem){
 
                 `${habilidade.descricao}\n`;
 
+
             }
 
 
@@ -227,6 +228,7 @@ function paginaAptidoes(personagem){
             texto +=
 
             `⭐ XP: ${habilidade.xp} | Nível: ${habilidade.nivel}\n\n`;
+
 
 
         });
@@ -237,13 +239,17 @@ function paginaAptidoes(personagem){
 
 
 
+
+
     return new EmbedBuilder()
+
 
     .setTitle(
 
         "⚔️ Habilidades"
 
     )
+
 
     .setDescription(
 
@@ -258,11 +264,19 @@ function paginaAptidoes(personagem){
 
 
 
+
+
+// ===============================
+// PÁGINA MAGIAS
+// ===============================
+
+
 function paginaMagias(magias){
 
 
 
     let texto = "";
+
 
 
 
@@ -274,7 +288,9 @@ function paginaMagias(magias){
         "Nenhuma magia aprendida.";
 
 
+
     }else{
+
 
 
         magias.forEach(magia => {
@@ -282,7 +298,6 @@ function paginaMagias(magias){
 
 
             texto +=
-
 
             `📖 **${magia.nome}**\n`;
 
@@ -295,12 +310,12 @@ function paginaMagias(magias){
 
                 `${magia.descricao}\n`;
 
+
             }
 
 
 
             texto +=
-
 
             `⭐ XP: ${magia.xp} | Nível: ${magia.nivel}\n\n`;
 
@@ -314,95 +329,38 @@ function paginaMagias(magias){
 
 
 
+
+
     return new EmbedBuilder()
 
-    .setTitle(
 
-        "📖 Magias"
-
-    )
-
-
-    .setDescription(
-
-        texto
-
-    );
+    .// ===============================
+// PROCESSAR BOTÕES DA FICHA
+// ===============================
 
 
-}
+async function processarBotao(interaction){
+
+
+
+    const mensagemId = interaction.message.id;
 
 
 
 
-
-
-
-module.exports = {
-
-
-    data: new SlashCommandBuilder()
-
-    .setName("ficha")
-
-    .setDescription(
-        "Mostra a ficha do personagem."
-    )
-
-
-    .addIntegerOption(option =>
-
-
-        option
-
-        .setName("slot")
-
-        .setDescription(
-            "Número do personagem."
-        )
-
-        .setRequired(true)
-
-
-    ),
-
-
-
-
-
-    async execute(interaction){
-
-
-
-        const slot = interaction.options.getInteger(
-            "slot"
-        );
-
-
-
-        const usuario = interaction.user.id;
-
-
-
-
-
-        const personagem = await database.buscarUm(
+    const personagem = await database.buscarUm(
 
 `
 SELECT *
 
 FROM jogadores
 
-WHERE usuario_id=$1
-
-AND slot=$2
+WHERE mensagem_ficha=$1
 `,
 
 [
 
-usuario,
-
-slot
+mensagemId
 
 ]
 
@@ -413,28 +371,28 @@ slot
 
 
 
-        if(!personagem){
+if(!personagem){
 
 
-            return interaction.reply({
+    return interaction.reply({
 
-                content:
+        content:
 
-                "❌ Personagem não encontrado.",
+        "❌ Esta ficha não está mais vinculada a um personagem.",
 
-                ephemeral:true
+        ephemeral:true
 
-            });
-
-
-        }
+    });
 
 
-
+}
 
 
 
-        const habilidades = await database.buscarTodos(
+
+
+
+const habilidades = await database.buscarTodos(
 
 `
 SELECT *
@@ -458,7 +416,7 @@ personagem.id
 
 
 
-        const magias = await database.buscarTodos(
+const magias = await database.buscarTodos(
 
 `
 SELECT *
@@ -480,46 +438,126 @@ personagem.id
 
 
 
-        fichasAtivas.set(
 
-            interaction.user.id,
 
-            {
-
-                personagem,
-
-                habilidades,
-
-                magias
-
-            }
-
-        );
+let embed;
 
 
 
 
 
-        await interaction.reply({
-
-            embeds:[
-
-                paginaResumo(personagem)
-
-            ],
-
-
-            components:[
-
-                criarBotoes()
-
-            ]
-
-        });
+switch(interaction.customId){
 
 
 
-    },
+case "ficha_resumo":
+
+
+
+    embed = paginaResumo(personagem);
+
+
+break;
+
+
+
+
+
+case "ficha_aptidoes":
+
+
+
+    embed = paginaAptidoes(personagem);
+
+
+break;
+
+
+
+
+
+case "ficha_habilidades":
+
+
+
+    embed = paginaHabilidades(habilidades);
+
+
+break;
+
+
+
+
+
+case "ficha_magias":
+
+
+
+    embed = paginaMagias(magias);
+
+
+break;
+
+
+
+
+
+default:
+
+
+return;
+
+}
+
+
+
+
+await interaction.update({
+
+
+
+embeds:[embed],
+
+
+
+components:[
+
+criarBotoes()
+
+]
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+// ===============================
+// EXPORTAÇÃO
+// ===============================
+
+
+module.exports = {
+
+
+    data: module.exports.data,
+
+
+    execute: module.exports.execute,
+
+
+    processarBotao,
+
+
+    criarBotoes,
 
 
     paginas:{
@@ -527,17 +565,17 @@ personagem.id
 
         resumo: paginaResumo,
 
+
         aptidoes: paginaAptidoes,
 
+
         habilidades: paginaHabilidades,
+
 
         magias: paginaMagias
 
 
-    },
-
-
-    fichasAtivas
+    }
 
 
 };
