@@ -8,6 +8,7 @@ const db = require("../Database/database");
 
 module.exports = {
 
+
     data: new SlashCommandBuilder()
 
         .setName("ficha")
@@ -15,6 +16,7 @@ module.exports = {
         .setDescription(
             "Mostra sua ficha de personagem"
         ),
+
 
 
     async execute(interaction) {
@@ -40,17 +42,15 @@ module.exports = {
             if (resultado.rows.length === 0) {
 
 
-                await interaction.reply({
+                return interaction.reply({
 
                     content:
-                    "🌍 O mundo ainda não reconhece sua existência. Use /registrar antes de consultar sua ficha.",
+                    "🌍 O mundo ainda não reconhece sua existência. Use /registrar antes.",
 
                     ephemeral: true
 
                 });
 
-
-                return;
 
             }
 
@@ -174,15 +174,19 @@ module.exports = {
 
                 UPDATE jogadores
 
-                SET mensagem_ficha = $1
+                SET mensagem_ficha = $1,
 
-                WHERE id = $2
+                    canal_ficha = $2
+
+                WHERE id = $3
 
                 `,
 
                 [
 
                     mensagem.id,
+
+                    interaction.channel.id,
 
                     userId
 
@@ -198,12 +202,14 @@ module.exports = {
             console.error(error);
 
 
+
             await interaction.reply({
 
                 content:
-                "🌍 As leis do mundo falharam ao consultar sua ficha.",
 
-                ephemeral: true
+                "🌍 As leis do mundo falharam ao criar sua ficha.",
+
+                ephemeral:true
 
             });
 
@@ -212,5 +218,6 @@ module.exports = {
 
 
     }
+
 
 };
