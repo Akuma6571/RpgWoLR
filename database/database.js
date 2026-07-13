@@ -1,133 +1,127 @@
 const { Pool } = require("pg");
-const config = require("../config/config");
-const logger = require("../utils/logger");
+
 
 
 const pool = new Pool({
 
-    connectionString: config.DATABASE_URL,
+    connectionString: process.env.DATABASE_URL,
 
     ssl: {
         rejectUnauthorized: false
-    },
-
-    max: 10,
-
-    idleTimeoutMillis: 30000,
-
-    connectionTimeoutMillis: 10000
-
-});
-
-
-
-pool.on("connect", () => {
-
-    logger.info(
-        "🌍 Nova conexão PostgreSQL criada."
-    );
-
-});
-
-
-pool.on("error", (error) => {
-
-    logger.erro(
-        "Erro inesperado no PostgreSQL: "
-        + error.message
-    );
-
-});
-
-
-
-
-async function conectarBanco(){
-
-    try {
-
-        const client = await pool.connect();
-
-
-        logger.sucesso(
-            "🌍 Banco PostgreSQL conectado."
-        );
-
-
-        client.release();
-
-
-        const migrations = require("./migrations");
-
-
-        await migrations.executar();
-
-
-    } catch(error){
-
-
-        logger.erro(
-            "Falha ao iniciar banco: "
-            + error.message
-        );
-
-
-        process.exit(1);
-
     }
 
-}
+});
 
 
 
 
 
-async function query(text, params){
+pool.connect()
 
-    try {
-
-
-        return await pool.query(
-
-            text,
-
-            params
-
-        );
+.then(client => {
 
 
-    } catch(error){
+    console.log(
+        "🌍 Banco PostgreSQL conectado."
+    );
 
 
-        logger.erro(
-
-            "Erro SQL: "
-            + error.message
-
-        );
+    client.release();
 
 
-        throw error;
-
-    }
-
-}
+    criarBanco();
 
 
+})
 
 
-async function buscarUm(text, params){
+.catch(error => {
 
-    const resultado = await query(
 
-        text,
+    console.error(
 
-        params
+        "❌ Erro ao conectar ao PostgreSQL:",
+
+        error
 
     );
 
 
-    return resultado.rows[0] || null;
+});
+
+
+
+
+
+
+
+
+
+async function criarBanco(){
+
+
+
+try{
+
+
+
+await criarTabelaJogadores();
+
+
+await criarTabelaMagias();
+
+
+await criarTabelaHabilidades();
+
+
+await criarTabelaMundo();
+
+
+await criarTabelaMemorias();
+
+
+await criarTabelaEventos();
+
+
+await criarTabelaRolagens();
+
+
+await criarTabelaEvolucoes();
+
+
+await criarTabelaSlots();
+
+
+
+
+
+console.log(
+
+"🌍 Banco RPG completamente estruturado."
+
+);
+
+
+
+
+
+}catch(error){
+
+
+
+console.error(
+
+"❌ Erro ao criar estrutura:",
+
+error
+
+);
+
+
+
+}
+
+
 
 }
 
@@ -135,18 +129,196 @@ async function buscarUm(text, params){
 
 
 
-async function buscarTodos(text, params){
-
-    const resultado = await query(
-
-        text,
-
-        params
-
-    );
 
 
-    return resultado.rows;
+
+
+async function criarTabelaJogadores(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS jogadores (
+
+
+
+id TEXT PRIMARY KEY,
+
+
+
+usuario_id TEXT,
+
+
+
+slot INTEGER DEFAULT 1,
+
+
+
+universo TEXT DEFAULT 'Principal',
+
+
+
+titulo TEXT DEFAULT 'Sem título',
+
+
+
+nome TEXT,
+
+
+
+idade INTEGER DEFAULT 0,
+
+
+
+altura INTEGER DEFAULT 0,
+
+
+
+raca TEXT DEFAULT 'Não definida',
+
+
+
+classe TEXT DEFAULT 'Não definida',
+
+
+
+subclasse TEXT DEFAULT 'Não definida',
+
+
+
+
+
+status TEXT DEFAULT 'Vivo',
+
+
+
+mortes INTEGER DEFAULT 0,
+
+
+
+dias_vividos INTEGER DEFAULT 0,
+
+
+
+pontos_atributo INTEGER DEFAULT 0,
+
+
+
+
+
+vida BIGINT DEFAULT 100,
+
+
+
+resistencia BIGINT DEFAULT 10,
+
+
+
+forca BIGINT DEFAULT 10,
+
+
+
+agilidade BIGINT DEFAULT 10,
+
+
+
+estamina BIGINT DEFAULT 10,
+
+
+
+mana BIGINT DEFAULT 10,
+
+
+
+inteligencia BIGINT DEFAULT 10,
+
+
+
+carisma BIGINT DEFAULT 10,
+
+
+
+aura BIGINT DEFAULT 10,
+
+
+
+sorte BIGINT DEFAULT 10,
+
+
+
+chancecritica NUMERIC DEFAULT 5,
+
+
+
+
+
+magica INTEGER DEFAULT 0,
+
+
+
+fogo INTEGER DEFAULT 0,
+
+
+
+terra INTEGER DEFAULT 0,
+
+
+
+ar INTEGER DEFAULT 0,
+
+
+
+agua INTEGER DEFAULT 0,
+
+
+
+luz INTEGER DEFAULT 0,
+
+
+
+escuridao INTEGER DEFAULT 0,
+
+
+
+secundarias INTEGER DEFAULT 0,
+
+
+
+
+
+nivel BIGINT DEFAULT 1,
+
+
+
+xp BIGINT DEFAULT 0,
+
+
+
+
+
+mensagem_ficha TEXT,
+
+
+
+canal_ficha TEXT
+
+
+
+);
+
+
+
+`;
+
+
+
+
+await pool.query(query);
+
+
 
 }
 
@@ -154,15 +326,57 @@ async function buscarTodos(text, params){
 
 
 
-async function executar(text, params){
 
-    return await query(
 
-        text,
 
-        params
 
-    );
+async function criarTabelaMagias(){
+
+
+
+const query = `
+
+
+
+CREATE TABLE IF NOT EXISTS magias (
+
+
+
+id SERIAL PRIMARY KEY,
+
+
+
+personagem_id TEXT,
+
+
+
+nome TEXT,
+
+
+
+descricao TEXT,
+
+
+
+xp BIGINT DEFAULT 0,
+
+
+
+nivel INTEGER DEFAULT 1
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
 
 }
 
@@ -170,25 +384,56 @@ async function executar(text, params){
 
 
 
-module.exports = {
 
 
-    pool,
 
 
-    conectarBanco,
+async function criarTabelaHabilidades(){
 
 
-    query,
+
+const query = `
 
 
-    buscarUm,
+
+CREATE TABLE IF NOT EXISTS habilidades (
 
 
-    buscarTodos,
+
+id SERIAL PRIMARY KEY,
 
 
-    executar
+
+personagem_id TEXT,
 
 
-};
+
+nome TEXT,
+
+
+
+descricao TEXT,
+
+
+
+xp BIGINT DEFAULT 0,
+
+
+
+nivel INTEGER DEFAULT 1
+
+
+
+);
+
+
+
+`;
+
+
+
+await pool.query(query);
+
+
+
+}
