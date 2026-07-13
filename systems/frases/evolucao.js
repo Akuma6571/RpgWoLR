@@ -82,7 +82,7 @@ goblin: [
 
 "Uma criatura pequena recusou permanecer pequena.",
 
-"Interessante... até um goblin pode desafiar aquilo que esperavam dele.",
+"Interessante... até um ser inferior pode desafiar aquilo que esperavam dele.",
 
 "A fraqueza inicial não determinou seu futuro.",
 
