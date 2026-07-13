@@ -1,12 +1,12 @@
-const { SlashCommandBuilder } = require("discord.js");
+const {
+    SlashCommandBuilder,
+    EmbedBuilder
+} = require("discord.js");
 
-const Ficha = require("../systems/ficha");
-const Personagem = require("../systems/personagem");
-
+const database = require("../database/database");
 
 
 module.exports = {
-
 
 
     data: new SlashCommandBuilder()
@@ -16,6 +16,7 @@ module.exports = {
         .setDescription(
             "Mostra a ficha do personagem."
         )
+
 
         .addIntegerOption(option =>
 
@@ -35,32 +36,41 @@ module.exports = {
 
 
 
-
     async execute(interaction){
 
 
-
         const slot = interaction.options.getInteger(
-
             "slot"
-
         );
 
 
-
-        const discordId = interaction.user.id;
-
+        const usuario = interaction.user.id;
 
 
 
-        const personagem = await Personagem.buscar(
+        const personagem = await database.buscarUm(
 
-            discordId,
+            `
 
-            slot
+            SELECT *
+
+            FROM jogadores
+
+            WHERE usuario_id=$1
+
+            AND slot=$2
+
+            `,
+
+            [
+
+                usuario,
+
+                slot
+
+            ]
 
         );
-
 
 
 
@@ -68,11 +78,9 @@ module.exports = {
         if(!personagem){
 
 
-
             return interaction.reply({
 
                 content:
-
                 "❌ Personagem não encontrado.",
 
                 ephemeral:true
@@ -86,212 +94,195 @@ module.exports = {
 
 
 
+        const habilidades = await database.buscarTodos(
 
-        const dados = await Ficha.buscarCompleta(
+            `
 
-            personagem.id
+            SELECT *
 
-        );
+            FROM habilidades
 
+            WHERE personagem_id=$1
 
+            `,
 
+            [
 
+                personagem.id
 
-        const texto = Ficha.formatar(formatar(ficha){
+            ]
 
-
-    const p = ficha.personagem;
-
-    const a = ficha.atributos;
-
-    const ap = ficha.aptidoes;
-
+        );        const embed = new EmbedBuilder()
 
 
-    let texto = `
+        .setTitle(
 
-🌍 **${p.titulo}**
+            `🌍 ${personagem.titulo}`
 
+        )
+
+
+        .setDescription(
+
+`
 ━━━━━━━━━━━━━━
 
+👤 **Nome:** ${personagem.nome}
 
-👤 **Nome:** ${p.nome}
+🎂 **Idade:** ${personagem.idade}
 
-🎂 **Idade:** ${p.idade}
-
-📏 **Altura:** ${p.altura} cm
-
-
-🧬 **Raça:** ${p.raca}
-
-⚔️ **Classe:** ${p.classe}
-
-✨ **Subclasse:** ${p.subclasse}
+📏 **Altura:** ${personagem.altura} cm
 
 
-━━━━━━━━━━━━━━
+🧬 **Raça:** ${personagem.raca}
 
+⚔️ **Classe:** ${personagem.classe}
 
-📈 **Nível:** ${p.nivel}
-
-⭐ **XP:** ${p.xp}/${p.xp_proximo}
+✨ **Subclasse:** ${personagem.subclasse}
 
 
 ━━━━━━━━━━━━━━
 
 
-❤️ **Vida:** ${a.vida} | 🛡️ **Resistência:** ${a.resistencia}
+📈 **Nível:** ${personagem.nivel}
 
-
-💪 **Força:** ${a.forca} | 🏃 **Agilidade:** ${a.agilidade}
-
-
-🔥 **Estamina:** ${a.estamina} | 🔮 **Mana:** ${a.mana}
-
-
-🧠 **Inteligência:** ${a.inteligencia} | 🎭 **Carisma:** ${a.carisma}
-
-
-🌌 **Aura:** ${a.aura} | 🍀 **Sorte:** ${a.sorte}
-
-
-🎯 **Chance Crítica:** ${a.chance_critica}%
+⭐ **XP:** ${personagem.xp}
 
 
 ━━━━━━━━━━━━━━
+`
 
+        )
 
-✨ **APTIDÕES**
 
 
-🔮 Mágica: ${ap.magica}%
+        .addFields(
 
-🔥 Fogo: ${ap.fogo}%
 
-🌎 Terra: ${ap.terra}%
+        {
 
-🌪️ Ar: ${ap.ar}%
+            name:
+            "📊 Estatísticas",
 
-💧 Água: ${ap.agua}%
+            value:
 
-☀️ Luz: ${ap.luz}%
+`
+❤️ Vida: ${personagem.vida} | 🛡️ Resistência: ${personagem.resistencia}
 
-🌑 Escuridão: ${ap.escuridao}%
+💪 Força: ${personagem.forca} | 🏃 Agilidade: ${personagem.agilidade}
 
-✨ Secundárias: ${ap.secundarias}%
+🔥 Estamina: ${personagem.estamina} | 🔮 Mana: ${personagem.mana}
 
+🧠 Inteligência: ${personagem.inteligencia} | 🎭 Carisma: ${personagem.carisma}
 
-━━━━━━━━━━━━━━
+🌌 Aura: ${personagem.aura} | 🍀 Sorte: ${personagem.sorte}
 
 
-📖 **MAGIAS**
+                 🎯 Chance Crítica: ${personagem.chancecritica}%
 
-`;
+`,
 
+            inline:false
 
+        },
 
-    if(
 
-        ficha.magias.length === 0
+        {
 
-    ){
 
-        texto += "Nenhuma\n";
+            name:
 
+            "✨ Aptidões",
 
-    }else{
 
+            value:
 
-        ficha.magias.forEach(magia => {
+`
+🔮 Mágica: ${personagem.magica}%
 
+🔥 Fogo: ${personagem.fogo}%
 
-            texto +=
+🌎 Terra: ${personagem.terra}%
 
-            `• ${magia.nome} (${magia.xp} XP)\n`;
+🌪️ Ar: ${personagem.ar}%
 
+💧 Água: ${personagem.agua}%
 
-        });
+☀️ Luz: ${personagem.luz}%
 
+🌑 Escuridão: ${personagem.escuridao}%
 
-    }
+✨ Secundárias: ${personagem.secundarias}%
 
+`,
 
+            inline:false
 
+        }
 
 
-    texto += `
+        );        // HABILIDADES
 
+        let textoHabilidades = "";
 
-━━━━━━━━━━━━━━
 
+        if(habilidades.length === 0){
 
-⚔️ **HABILIDADES**
 
-`;
+            textoHabilidades = 
+            "Nenhuma habilidade aprendida.";
 
 
+        }else{
 
 
+            habilidades.forEach(habilidade => {
 
-    if(
 
-        ficha.habilidades.length === 0
+                textoHabilidades +=
 
-    ){
+                `• **${habilidade.nome}**\n`;
 
-        texto += "Nenhuma\n";
 
+                if(habilidade.descricao){
 
-    }else{
 
+                    textoHabilidades +=
 
-        ficha.habilidades.forEach(habilidade => {
+                    `  ${habilidade.descricao}\n`;
 
 
-            texto +=
+                }
 
-            `• ${habilidade.nome} (${habilidade.xp} XP)\n`;
 
+                textoHabilidades +=
 
-        });
+                `  ⭐ XP: ${habilidade.xp} | Nível: ${habilidade.nivel}\n\n`;
 
 
-    }
+            });
 
 
+        }
 
 
 
-    texto += `
 
+        embed.addFields({
 
-━━━━━━━━━━━━━━
 
+            name:
 
-🌍 *"Toda existência possui uma história. Algumas apenas são mais interessantes de observar."*
+            "⚔️ Habilidades",
 
-`;
 
+            value:
 
+            textoHabilidades,
 
-    return texto;
 
+            inline:false
 
-}
-
-            dados
-
-        );
-
-
-
-
-
-        const mensagem = await interaction.reply({
-
-            content:texto,
-
-            fetchReply:true
 
         });
 
@@ -300,19 +291,188 @@ module.exports = {
 
 
 
-        await Ficha.salvarMensagem(
+        // MAGIAS
 
-            personagem.id,
+        let textoMagias = "";
 
-            mensagem.id,
 
-            mensagem.channel.id
+
+        if(magias.length === 0){
+
+
+            textoMagias =
+
+            "Nenhuma magia aprendida.";
+
+
+        }else{
+
+
+            magias.forEach(magia => {
+
+
+                textoMagias +=
+
+
+                `• **${magia.nome}**\n`;
+
+
+
+                if(magia.descricao){
+
+
+                    textoMagias +=
+
+                    `  ${magia.descricao}\n`;
+
+
+                }
+
+
+
+                textoMagias +=
+
+
+                `  ⭐ XP: ${magia.xp} | Nível: ${magia.nivel}\n\n`;
+
+
+
+            });
+
+
+        }
+
+
+
+
+
+        embed.addFields({
+
+
+            name:
+
+            "📖 Magias",
+
+
+            value:
+
+            textoMagias,
+
+
+            inline:false
+
+
+        });        embed.setFooter({
+
+            text:
+
+            "🌍 Toda existência possui uma história. Algumas apenas são mais interessantes de observar."
+
+        });
+
+
+
+
+        embed.setTimestamp();
+
+
+
+
+
+
+        await interaction.reply({
+
+            embeds:[embed]
+
+        });
+
+
+
+
+
+        const mensagem = await interaction.fetchReply();
+
+
+
+
+
+
+        await database.executar(
+
+            `
+
+            UPDATE jogadores
+
+            SET mensagem_ficha=$1,
+
+            canal_ficha=$2
+
+            WHERE id=$3
+
+            `,
+
+            [
+
+                mensagem.id,
+
+                mensagem.channel.id,
+
+                personagem.id
+
+            ]
+
+        );        await database.executar(
+
+            `
+
+            UPDATE jogadores
+
+            SET mensagem_ficha=$1,
+
+            canal_ficha=$2
+
+            WHERE id=$3
+
+            `,
+
+            [
+
+                mensagem.id,
+
+                mensagem.channel.id,
+
+                personagem.id
+
+            ]
 
         );
-
 
 
     }
 
 
 };
+
+
+
+
+
+        const magias = await database.buscarTodos(
+
+            `
+
+            SELECT *
+
+            FROM magias
+
+            WHERE personagem_id=$1
+
+            `,
+
+            [
+
+                personagem.id
+
+            ]
+
+        );
