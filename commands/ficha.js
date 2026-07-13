@@ -12,7 +12,7 @@ const database = require("../database/database");
 
 module.exports = {
 
-
+    
     data: new SlashCommandBuilder()
 
         .setName("ficha")
@@ -35,8 +35,6 @@ module.exports = {
             .setRequired(true)
 
         ),
-
-
 
 
 
@@ -78,7 +76,35 @@ module.exports = {
 
                 slot
 
-            ]        const habilidades = await database.buscarTodos(
+            ]
+
+        );
+
+
+
+
+
+        if(!personagem){
+
+
+            return interaction.reply({
+
+                content:
+
+                "❌ Personagem não encontrado.",
+
+                ephemeral:true
+
+            });
+
+
+        }
+
+
+
+
+
+        const habilidades = await database.buscarTodos(
 
             `
 
@@ -169,8 +195,13 @@ module.exports = {
 
 `
 
-        );        embed.addFields(
+        );
 
+
+
+
+
+        embed.addFields(
 
         {
 
@@ -193,7 +224,7 @@ module.exports = {
 🌌 Aura: ${personagem.aura} | 🍀 Sorte: ${personagem.sorte}
 
 
-🎯 **Chance Crítica: ${personagem.chancecritica}%**
+              🎯 **Chance Crítica: ${personagem.chancecritica}%**
 
 `,
 
@@ -202,11 +233,7 @@ module.exports = {
         },
 
 
-
-
-
         {
-
 
             name:
 
@@ -311,6 +338,7 @@ module.exports = {
 
 
 
+
         let textoMagias = "";
 
 
@@ -376,7 +404,14 @@ module.exports = {
             inline:false
 
 
-        });        embed.setFooter({
+        });
+
+
+
+
+
+
+        embed.setFooter({
 
             text:
 
@@ -386,7 +421,10 @@ module.exports = {
 
 
 
+
+
         embed.setTimestamp();
+
 
 
 
@@ -403,6 +441,7 @@ module.exports = {
 
 
         const mensagem = await interaction.fetchReply();
+
 
 
 
@@ -440,26 +479,3 @@ module.exports = {
 
 
 };
-
-        );
-
-
-
-
-
-
-        if(!personagem){
-
-
-            return interaction.reply({
-
-                content:
-
-                "❌ Personagem não encontrado.",
-
-                ephemeral:true
-
-            });
-
-
-        }
