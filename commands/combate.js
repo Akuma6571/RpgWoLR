@@ -1,7 +1,7 @@
 // ==========================================
 // 🌍 O MUNDO BOT V2
 // SISTEMA DEFINITIVO DE COMBATE
-// PREPARADO PARA MEMÓRIA E SISTEMAS FUTUROS
+// PREPARADO PARA EXPANSÃO FUTURA
 // ==========================================
 
 
@@ -16,49 +16,38 @@ const {
 
 
 
-// Sistemas futuros
-// Serão ativados quando forem criados
+// ==========================================
+// SISTEMAS FUTUROS
+// ==========================================
 
 
 let mundo = null;
-
 let memoria = null;
-
 let eventos = null;
 
 
 
 try {
 
-
     mundo = require("../systems/mundo/mundo");
-
 
 } catch(e){}
 
 
 
-
 try {
-
 
     memoria = require("../systems/memoria/memoria");
 
-
 } catch(e){}
-
 
 
 
 try {
 
-
     eventos = require("../systems/eventos/eventos");
 
-
 } catch(e){}
-
-
 
 
 
@@ -70,9 +59,7 @@ try {
 // ==========================================
 
 
-let combatesAtivos = {};
-
-
+const combatesAtivos = {};
 
 
 
@@ -81,7 +68,7 @@ let combatesAtivos = {};
 
 
 // ==========================================
-// REGISTRAR EVENTO DO MUNDO
+// REGISTRO DE EVENTOS
 // ==========================================
 
 
@@ -132,7 +119,58 @@ async function registrarEvento(tipo, dados){
 
 
 // ==========================================
-// CHAMAR O MUNDO
+// MEMÓRIA DO MUNDO
+// ==========================================
+
+
+async function registrarMemoria(tipo, dados){
+
+
+    try{
+
+
+        if(memoria && memoria.salvar){
+
+
+            await memoria.salvar(
+
+                tipo,
+
+                dados
+
+            );
+
+
+        }
+
+
+    }catch(erro){
+
+
+        console.error(
+
+            "Erro ao salvar memória:",
+
+            erro
+
+        );
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================================
+// COMENTÁRIO DO MUNDO
 // ==========================================
 
 
@@ -162,7 +200,7 @@ async function chamarMundo(tipo, dados){
 
         console.error(
 
-            "Erro no Mundo:",
+            "Erro no sistema do Mundo:",
 
             erro
 
@@ -181,7 +219,7 @@ async function chamarMundo(tipo, dados){
 // ==========================================
 
 
-module.exports = {
+const comandoCombate = {
 
 
 
@@ -203,11 +241,6 @@ data: new SlashCommandBuilder()
 
 
 
-
-
-// ==========================================
-// INICIAR COMBATE
-// ==========================================
 
 
 .addSubcommand(sub =>
@@ -271,11 +304,6 @@ option
 
 
 
-
-
-// ==========================================
-// FINALIZAR COMBATE
-// ==========================================
 
 
 .addSubcommand(sub =>
@@ -361,7 +389,7 @@ option
 
 .setDescription(
 
-    "Alvo do combate."
+    "Nome do alvo."
 
 )
 
@@ -381,7 +409,7 @@ option
 
 .setDescription(
 
-    "XP entregue."
+    "Quantidade de XP entregue."
 
 )
 
@@ -392,7 +420,6 @@ option
 
 
 ),
-
 
 
 
@@ -423,10 +450,8 @@ async execute(interaction){
 
 
 
-
-
 // ==========================================
-// INICIAR
+// INICIAR COMBATE
 // ==========================================
 
 
@@ -435,7 +460,6 @@ async execute(interaction){
 
 
         if(combatesAtivos[servidor]){
-
 
 
             return interaction.reply({
@@ -521,6 +545,21 @@ async execute(interaction){
 
 
         await registrarEvento(
+
+            "combate_iniciado",
+
+            combate
+
+        );
+
+
+
+
+
+
+
+
+        await registrarMemoria(
 
             "combate_iniciado",
 
@@ -629,7 +668,7 @@ O destino aguarda o desfecho.
 
 
 // ==========================================
-// FINALIZAR
+// FINALIZAR COMBATE
 // ==========================================
 
 
@@ -698,9 +737,12 @@ O destino aguarda o desfecho.
             "xp"
 
         );
-// ==========================================
-// FINALIZAÇÃO DO COMBATE
-// ==========================================
+
+
+
+
+
+
 
 
         const resultadoCombate = {
@@ -710,10 +752,10 @@ O destino aguarda o desfecho.
             ...combate,
 
 
-            resultado,
-
-
             alvo,
+
+
+            resultado,
 
 
             xp,
@@ -727,15 +769,27 @@ O destino aguarda o desfecho.
 
 
         };
-
-
-
-
-
-
+// ==========================================
+// REGISTRO DO FINAL DO COMBATE
+// ==========================================
 
 
         await registrarEvento(
+
+            "combate_finalizado",
+
+            resultadoCombate
+
+        );
+
+
+
+
+
+
+
+
+        await registrarMemoria(
 
             "combate_finalizado",
 
@@ -861,8 +915,6 @@ ${respostaMundo || "O registro desta batalha foi marcado."}
 
 
 
-
-
 };
 
 
@@ -874,8 +926,12 @@ ${respostaMundo || "O registro desta batalha foi marcado."}
 
 
 // ==========================================
-// EXPORTAÇÕES FUTURAS
+// EXPORTAÇÕES
 // ==========================================
+
+
+module.exports = comandoCombate;
+
 
 
 module.exports.combatesAtivos = combatesAtivos;
@@ -883,6 +939,10 @@ module.exports.combatesAtivos = combatesAtivos;
 
 
 module.exports.registrarEvento = registrarEvento;
+
+
+
+module.exports.registrarMemoria = registrarMemoria;
 
 
 
