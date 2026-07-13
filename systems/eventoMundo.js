@@ -1,6 +1,6 @@
 const MundoRelacao = require("./mundoRelacao");
 
-
+const reacaoMundo = require("./reacaoMundo");
 
 
 
