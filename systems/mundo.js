@@ -1,5 +1,5 @@
 const database = require("../database/database");
-
+const frases = require("./frases");
 const frases = require("./frases_mundo");
 
 
