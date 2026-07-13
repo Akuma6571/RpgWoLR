@@ -1,35 +1,89 @@
 const Frases = require("./frases_mundo");
 
+const MundoRelacao = require("./mundoRelacao");
+
 
 
 
 
 async function reagirEvento(
 
-personagem_id,
+    personagem_id,
 
-evento,
+    evento,
 
-dados = {}
+    dados = {}
 
 ){
 
 
 
+    const frase = Frases.escolher(
 
+        evento
 
-const frase = Frases.escolher(
-
-evento
-
-);
-
+    );
 
 
 
 
 
-return frase;
+    if(dados.memoria){
+
+
+
+        await MundoRelacao.registrarMemoria(
+
+            personagem_id,
+
+            evento,
+
+            dados.memoria,
+
+            dados.importancia || 1
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    if(dados.relacao){
+
+
+
+        for(const campo in dados.relacao){
+
+
+
+            await MundoRelacao.alterarRelacao(
+
+                personagem_id,
+
+                campo,
+
+                dados.relacao[campo]
+
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+    return frase;
 
 
 
@@ -45,7 +99,7 @@ return frase;
 module.exports = {
 
 
-reagirEvento
+    reagirEvento
 
 
 };
