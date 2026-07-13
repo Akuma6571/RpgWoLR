@@ -323,6 +323,27 @@ deus: [
 
 ]
 
+frases.escolher = function(categoria){
+
+    const lista = frases[categoria];
+
+
+    if(!lista || lista.length === 0){
+
+        return "O Mundo permanece em silêncio.";
+
+    }
+
+
+    const indice = Math.floor(
+        Math.random() * lista.length
+    );
+
+
+    return lista[indice];
+
+};
+
 };
 
 
