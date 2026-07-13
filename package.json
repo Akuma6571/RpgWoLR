@@ -1,0 +1,26 @@
+{
+  "name": "o-mundo-bot",
+  "version": "2.0.0",
+  "description": "🌍 O Mundo - Discord RPG Bot",
+  "main": "index.js",
+
+  "scripts": {
+    "start": "node index.js"
+  },
+
+  "dependencies": {
+
+    "discord.js": "^14.16.3",
+
+    "pg": "^8.13.0",
+
+    "dotenv": "^16.4.5"
+
+  },
+
+  "engines": {
+
+    "node": ">=20"
+
+  }
+}
