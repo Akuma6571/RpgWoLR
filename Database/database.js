@@ -1,8 +1,6 @@
 const { Pool } = require("pg");
 
 
-// Conexão com PostgreSQL
-
 const pool = new Pool({
 
     connectionString: process.env.DATABASE_URL,
@@ -15,8 +13,6 @@ const pool = new Pool({
 
 
 
-// Teste de conexão
-
 pool.connect()
 
     .then(client => {
@@ -26,7 +22,6 @@ pool.connect()
         );
 
         client.release();
-
 
         criarTabela();
 
@@ -45,8 +40,6 @@ pool.connect()
 
 
 
-
-// Criar tabela de jogadores
 
 async function criarTabela() {
 
@@ -73,7 +66,6 @@ async function criarTabela() {
         subclasse TEXT DEFAULT 'Não definida',
 
 
-
         vida INTEGER DEFAULT 100,
 
         resistencia INTEGER DEFAULT 10,
@@ -97,7 +89,6 @@ async function criarTabela() {
         chancecritica INTEGER DEFAULT 5,
 
 
-
         magica INTEGER DEFAULT 0,
 
         fogo INTEGER DEFAULT 0,
@@ -115,18 +106,19 @@ async function criarTabela() {
         secundarias INTEGER DEFAULT 0,
 
 
-
         habilidades TEXT DEFAULT 'Nenhuma',
 
         magias TEXT DEFAULT 'Nenhuma',
-
 
 
         nivel INTEGER DEFAULT 1,
 
         xp INTEGER DEFAULT 0,
 
-        mensagem_ficha TEXT
+
+        mensagem_ficha TEXT,
+
+        canal_ficha TEXT
 
     );
 
@@ -139,12 +131,12 @@ async function criarTabela() {
         await pool.query(query);
 
 
+        await atualizarTabela();
+
+
         console.log(
             "🌍 Tabela de jogadores pronta."
         );
-
-
-        atualizarTabela();
 
 
     } catch(error) {
@@ -164,9 +156,6 @@ async function criarTabela() {
 
 
 
-
-// Atualizações futuras da tabela
-
 async function atualizarTabela() {
 
 
@@ -177,10 +166,11 @@ async function atualizarTabela() {
 
             ALTER TABLE jogadores
 
-            ADD COLUMN IF NOT EXISTS mensagem_ficha TEXT
+            ADD COLUMN IF NOT EXISTS mensagem_ficha TEXT,
+
+            ADD COLUMN IF NOT EXISTS canal_ficha TEXT
 
         `);
-
 
 
         console.log(
@@ -188,12 +178,11 @@ async function atualizarTabela() {
         );
 
 
-
     } catch(error) {
 
 
         console.error(
-            "❌ Erro ao atualizar tabela:",
+            "❌ Erro ao atualizar estrutura:",
             error
         );
 
@@ -202,7 +191,6 @@ async function atualizarTabela() {
 
 
 }
-
 
 
 
