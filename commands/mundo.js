@@ -9,6 +9,7 @@ const DONO_ID = process.env.DONO_ID;
 
 
 
+
 module.exports = {
 
 
@@ -21,7 +22,7 @@ data: new SlashCommandBuilder()
 "Mostra a relação do Mundo com um personagem."
 )
 
-.addIntegerOption(option =>
+.addStringOption(option =>
 
 option
 
@@ -65,7 +66,8 @@ ephemeral:true
 
 
 
-const id = interaction.options.getInteger(
+
+const id = interaction.options.getString(
 
 "personagem"
 
@@ -76,7 +78,56 @@ const id = interaction.options.getInteger(
 
 
 
-const relacao = await database.buscarUm(
+
+const personagem = await database.buscarUm(
+
+`
+
+SELECT *
+
+FROM jogadores
+
+WHERE id=$1
+
+`,
+
+[
+
+id
+
+]
+
+);
+
+
+
+
+
+
+
+if(!personagem){
+
+
+return interaction.reply({
+
+content:
+
+"❌ Personagem não encontrado.",
+
+ephemeral:true
+
+});
+
+
+}
+
+
+
+
+
+
+
+let relacao = await database.buscarUm(
 
 `
 
@@ -101,21 +152,66 @@ id
 
 
 
+
 if(!relacao){
 
 
-return interaction.reply({
 
-content:
+await database.executar(
 
-"❌ Esse personagem ainda não possui uma relação registrada com o Mundo.",
+`
 
-ephemeral:true
+INSERT INTO mundo_personagem
 
-});
+(
+
+personagem_id
+
+)
+
+VALUES
+
+($1)
+
+`,
+
+[
+
+id
+
+]
+
+);
+
+
+
+
+
+
+relacao = await database.buscarUm(
+
+`
+
+SELECT *
+
+FROM mundo_personagem
+
+WHERE personagem_id=$1
+
+`,
+
+[
+
+id
+
+]
+
+);
+
 
 
 }
+
 
 
 
@@ -129,7 +225,7 @@ const memorias = await database.buscarTodos(
 
 SELECT *
 
-FROM memoria_mundo
+FROM memorias_mundo
 
 WHERE personagem_id=$1
 
@@ -153,31 +249,6 @@ id
 
 
 
-const personagem = await database.buscarUm(
-
-`
-
-SELECT *
-
-FROM personagens
-
-WHERE id=$1
-
-`,
-
-[
-
-id
-
-]
-
-);
-
-
-
-
-
-
 
 let texto = `
 
@@ -186,37 +257,85 @@ let texto = `
 ━━━━━━━━━━━━━━
 
 
-👤 Personagem:
 
-${personagem ? personagem.nome : "Desconhecido"}
+👤 **Personagem:**
 
-
-👁 Interesse:
-
-${relacao.interesse}
+${personagem.nome || "Sem nome"}
 
 
-⚡ Interferências:
 
-${relacao.interferencias}
+🧬 **Raça:**
 
-
-⚖ Afinidade:
-
-${relacao.afinidade}
+${personagem.raca}
 
 
-🔒 Segredo:
 
-${relacao.segredo || "Nenhum registrado"}
+⚔ **Classe:**
+
+${personagem.classe}
+
 
 
 ━━━━━━━━━━━━━━
 
 
-🧠 Memórias importantes:
+
+👁 **Interesse:**
+
+${relacao.interesse}
+
+
+
+⭐ **Respeito:**
+
+${relacao.respeito}
+
+
+
+🔥 **Irritação:**
+
+${relacao.irritacao}
+
+
+
+🌀 **Curiosidade:**
+
+${relacao.curiosidade}
+
+
+
+🎭 **Diversão:**
+
+${relacao.diversao}
+
+
+
+⚡ **Interferências:**
+
+${relacao.interferencias}
+
+
+
+⚖ **Afinidade:**
+
+${relacao.afinidade}
+
+
+
+🔒 **Segredo:**
+
+${relacao.segredo || "Nenhum registrado"}
+
+
+
+━━━━━━━━━━━━━━
+
+
+
+🧠 **Memórias importantes:**
 
 `;
+
 
 
 
@@ -227,10 +346,13 @@ ${relacao.segredo || "Nenhum registrado"}
 if(memorias.length === 0){
 
 
-texto += "Nenhuma memória registrada.";
+texto +=
+
+"Nenhuma memória registrada.";
 
 
 }else{
+
 
 
 memorias.forEach(m=>{
@@ -240,9 +362,11 @@ texto +=
 
 `
 
-• ${m.evento}
+• **${m.tipo}**
 
-"${m.comentario}"
+"${m.descricao}"
+
+Importância: ${m.importancia}
 
 `;
 
@@ -252,6 +376,7 @@ texto +=
 
 
 }
+
 
 
 
@@ -284,6 +409,7 @@ ephemeral:true
 
 
 }
+
 
 
 };
