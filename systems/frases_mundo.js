@@ -187,6 +187,142 @@ entidade_derrotada: [
 
 
 
+,
+
+dragao: [
+
+"Interessante... uma criatura que carregava eras de existência encontrou seu fim pelas mãos de um mortal.",
+
+"Dragões não costumam cair. Quando caem, o mundo costuma lembrar.",
+
+"Você derrotou algo que muitos consideravam eterno. Não confunda isso com ser invencível.",
+
+"Uma era terminou hoje. A pergunta é: o que nascerá no lugar dela?"
+
+],
+
+
+
+magia: [
+
+"A mana respondeu ao seu chamado. Poucos conseguem convencer o mundo a obedecer.",
+
+"Você tocou uma força que muitos estudam durante uma vida inteira.",
+
+"A magia não é uma ferramenta. É uma responsabilidade que muitos esquecem.",
+
+"Interessante... você aprendeu a alterar uma pequena parte da realidade."
+
+],
+
+
+
+magia_proibida: [
+
+"Você abriu uma porta que muitos passaram eras tentando selar.",
+
+"Alguns conhecimentos existem por uma razão: serem esquecidos.",
+
+"O poder respondeu. Mas algo também respondeu ao poder.",
+
+"Você descobriu uma verdade que talvez nunca devesse ter encontrado."
+
+],
+
+
+
+evolucao: [
+
+"Interessante... sua existência acaba de ultrapassar um limite anterior.",
+
+"O ser que você era deixou de existir. Agora resta descobrir o que nasceu em seu lugar.",
+
+"Evolução é apenas outra palavra para uma mudança que não pode ser desfeita.",
+
+"Poucos conseguem alcançar esse ponto. Menos ainda conseguem suportar."
+
+],
+
+
+
+nascimento: [
+
+"Uma nova existência surgiu. Pequena agora... mas o futuro raramente é previsível.",
+
+"Mais uma vida entrou no ciclo. O que ela fará ainda permanece desconhecido.",
+
+"Todo grande acontecimento começa com algo aparentemente insignificante."
+
+],
+
+
+
+descoberta: [
+
+"Você encontrou algo que muitos passaram suas vidas procurando.",
+
+"O desconhecido deixou de ser desconhecido. Mas novas perguntas surgiram.",
+
+"Conhecimento é uma arma perigosa nas mãos erradas."
+
+],
+
+
+
+doma: [
+
+"Curioso... uma criatura que deveria ser selvagem agora escolheu seguir outro caminho.",
+
+"Dominar uma criatura é fácil. Ser aceito por ela é outra questão.",
+
+"Nem toda fera aceita correntes. Algumas aceitam apenas respeito.",
+
+"Uma nova ligação foi criada. Resta saber quanto ela irá durar."
+
+],
+
+
+
+subjugacao: [
+
+"A força obrigou a criatura a obedecer. Mas obediência não significa lealdade.",
+
+"Você conquistou o controle, mas não necessariamente conquistou a vontade dela.",
+
+"Algumas correntes são feitas de metal. Outras são feitas de medo.",
+
+"O tempo revelará se essa criatura é uma aliada ou apenas uma prisioneira."
+
+],
+
+
+
+intervencao: [
+
+"Eu poderia permanecer em silêncio. Mas algumas situações exigem minha atenção.",
+
+"Uma pequena alteração foi necessária. Não confunda isso com misericórdia.",
+
+"O destino possui caminhos demais para deixar todos seguirem sem interferência.",
+
+"Observe com cuidado. Minha intervenção sempre possui um motivo."
+
+],
+
+
+
+deus: [
+
+"Até mesmo aqueles chamados de divindades podem ser observados.",
+
+"Poder não define uma existência. As escolhas feitas com esse poder definem.",
+
+"Alguns seres foram adorados por eras. Isso não significa que sejam eternos.",
+
+"Entre mortais e deuses existe apenas uma diferença: o tempo que levaram para chegar lá."
+
+]
+
 };
 
 
