@@ -199,10 +199,7 @@ const migrations = [
     );
 
     `
-},
-
-
-{
+},{
     version: 6,
 
     name: "Criar habilidades",
@@ -268,6 +265,8 @@ const migrations = [
 
     `
 },
+
+
 {
     version: 8,
 
@@ -384,10 +383,7 @@ const migrations = [
     );
 
     `
-},
-
-
-{
+},{
     version: 11,
 
     name: "Criar criaturas domadas",
@@ -480,6 +476,54 @@ const migrations = [
         FOREIGN KEY(personagem_id)
 
         REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 13,
+
+    name: "Criar memórias do Mundo",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS memorias_mundo(
+
+        id SERIAL PRIMARY KEY,
+
+
+        personagem_id INTEGER NOT NULL,
+
+
+        tipo TEXT,
+
+
+        descricao TEXT,
+
+
+        importancia INTEGER DEFAULT 1,
+
+
+        criado_em TIMESTAMP DEFAULT NOW(),
+
+
+        FOREIGN KEY(personagem_id)
+
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
 {
     version: 14,
 
@@ -549,10 +593,7 @@ const migrations = [
     );
 
     `
-},
-
-
-{
+},{
     version: 16,
 
     name: "Criar pactos",
@@ -712,7 +753,43 @@ const migrations = [
 
         FOREIGN KEY(personagem_id)
 
-       {
+        REFERENCES personagens(id)
+
+        ON DELETE CASCADE
+
+    );
+
+    `
+},
+
+
+{
+    version: 20,
+
+    name: "Criar exclusão permanente",
+
+    sql: `
+
+    CREATE TABLE IF NOT EXISTS personagens_excluidos(
+
+        id SERIAL PRIMARY KEY,
+
+
+        nome TEXT,
+
+
+        antigo_id INTEGER,
+
+
+        motivo TEXT,
+
+
+        excluido_em TIMESTAMP DEFAULT NOW()
+
+    );
+
+    `
+},{
     version: 21,
 
     name: "Criar limites dos atributos",
@@ -840,6 +917,7 @@ const migrations = [
 
 
 
+
 async function verificarExecutada(version){
 
 
@@ -856,10 +934,10 @@ async function verificarExecutada(version){
     );
 
 
-    return resultado !== undefined;
+    return resultado !== null;
+
 
 }
-
 
 
 
@@ -874,4 +952,108 @@ async function registrar(migration){
 
         INSERT INTO schema_version
 
-        (
+        (version,nome)
+
+        VALUES($1,$2)
+
+        `,
+
+        [
+
+            migration.version,
+
+            migration.name
+
+        ]
+
+    );
+
+
+}
+
+
+
+
+
+async function executar(){
+
+
+    logger.info(
+
+        "🌍 Verificando estrutura do banco..."
+
+    );
+
+
+
+    for(const migration of migrations){
+
+
+
+        const existe = await verificarExecutada(
+
+            migration.version
+
+        );
+
+
+
+        if(existe)
+
+            continue;
+
+
+
+        logger.info(
+
+            "Executando: " + migration.name
+
+        );
+
+
+
+        await database.executar(
+
+            migration.sql
+
+        );
+
+
+
+        await registrar(
+
+            migration
+
+        );
+
+
+
+        logger.sucesso(
+
+            "Concluído: " + migration.name
+
+        );
+
+
+    }
+
+
+
+    logger.sucesso(
+
+        "🌍 Banco preparado."
+
+    );
+
+
+}
+
+
+
+
+
+module.exports = {
+
+    executar
+
+};
