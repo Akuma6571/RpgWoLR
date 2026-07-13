@@ -12,11 +12,8 @@ const {
 
 
 const fs = require("fs");
-
 const path = require("path");
-
 const http = require("http");
-
 const config = require("./config.json");
 
 
@@ -33,6 +30,7 @@ require("./Database/database");
 // ==========================================
 // SERVIDOR PARA O RENDER
 // ==========================================
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -56,7 +54,6 @@ http.createServer((req,res)=>{
 
 
 });
-
 
 
 
@@ -85,10 +82,8 @@ const mensagens = {
 
     "🌍 As leis do mundo foram perturbadas."
 
+
 };
-
-
-
 
 
 
@@ -114,13 +109,14 @@ const client = new Client({
 
 
 
-
 // ==========================================
-// COMANDOS
+// SISTEMA DE COMANDOS
 // ==========================================
 
 
 client.commands = new Collection();
+
+
 
 
 
@@ -136,6 +132,7 @@ const commandsFolder = path.join(
 
 
 
+
 if(fs.existsSync(commandsFolder)){
 
 
@@ -144,7 +141,12 @@ if(fs.existsSync(commandsFolder)){
 
     .readdirSync(commandsFolder)
 
-    .filter(file => file.endsWith(".js"));
+    .filter(
+
+        file => file.endsWith(".js")
+
+    );
+
 
 
 
@@ -171,11 +173,12 @@ if(fs.existsSync(commandsFolder)){
         );
 
 
+
     }
 
 
-}
 
+}
 
 
 
@@ -188,7 +191,11 @@ if(fs.existsSync(commandsFolder)){
 // ==========================================
 
 
-client.once("ready",()=>{
+client.once(
+
+"ready",
+
+()=>{
 
 
     console.log("==============================");
@@ -201,11 +208,13 @@ client.once("ready",()=>{
     );
 
 
+
     console.log(
 
         `🌍 Nome: ${config.botName}`
 
     );
+
 
 
     console.log(
@@ -215,12 +224,14 @@ client.once("ready",()=>{
     );
 
 
+
     console.log("==============================");
 
 
-});
 
+}
 
+);
 
 
 
@@ -240,176 +251,85 @@ async interaction => {
 
 
 
-    // ======================================
+    // ==================================
     // BOTÕES DA FICHA
-    // ======================================
+    // ==================================
 
 
     if(interaction.isButton()){
 
 
 
-        const ficha = require(
+        if(
 
-            "./commands/ficha"
+            interaction.customId.startsWith(
 
-        );
+                "ficha_"
 
+            )
 
-
-        const dados = ficha.fichasAtivas.get(
-
-            interaction.user.id
-
-        );
+        ){
 
 
 
+            const ficha = require(
+
+                "./commands/ficha"
+
+            );
 
 
-        if(!dados){
+
+
+            try{
 
 
 
-            return interaction.reply({
+                await ficha.processarBotao(
+
+                    interaction
+
+                );
 
 
-                content:
-
-                "❌ Esta ficha expirou. Use /ficha novamente.",
 
 
-                ephemeral:true
+            }catch(error){
 
 
-            });
+
+                console.error(error);
+
+
+
+
+                if(!interaction.replied){
+
+
+
+                    await interaction.reply({
+
+                        content:
+
+                        "🌍 O mundo falhou ao alterar esta página.",
+
+
+                        ephemeral:true
+
+
+                    });
+
+
+
+                }
+
+
+
+            }
+
 
 
         }
-
-
-
-
-
-
-
-        let embed;
-
-
-
-
-
-        switch(interaction.customId){
-
-
-
-            case "ficha_resumo":
-
-
-
-                embed = ficha.paginas.resumo(
-
-                    dados.personagem
-
-                );
-
-
-            break;
-
-
-
-
-
-
-
-            case "ficha_aptidoes":
-
-
-
-                embed = ficha.paginas.aptidoes(
-
-                    dados.personagem
-
-                );
-
-
-            break;
-
-
-
-
-
-
-
-            case "ficha_habilidades":
-
-
-
-                embed = ficha.paginas.habilidades(
-
-                    dados.habilidades
-
-                );
-
-
-            break;
-
-
-
-
-
-
-
-            case "ficha_magias":
-
-
-
-                embed = ficha.paginas.magias(
-
-                    dados.magias
-
-                );
-
-
-            break;
-
-
-
-
-
-
-
-            default:
-
-
-                return;
-
-
-        }
-
-
-
-
-
-
-
-
-        await interaction.update({
-
-
-
-            embeds:[embed],
-
-
-
-            components:[
-
-                interaction.message.components[0]
-
-            ]
-
-
-        });
 
 
 
@@ -424,13 +344,17 @@ async interaction => {
 
 
 
-
-    // ======================================
+    // ==================================
     // COMANDOS SLASH
-    // ======================================
+    // ==================================
 
 
-    if(!interaction.isChatInputCommand()){
+
+    if(
+
+        !interaction.isChatInputCommand()
+
+    ){
 
         return;
 
@@ -458,8 +382,7 @@ async interaction => {
 
 
 
-        return interaction.reply({
-
+        await interaction.reply({
 
 
             content:
@@ -467,12 +390,15 @@ async interaction => {
             mensagens.comandoDesconhecido,
 
 
-
             ephemeral:true
 
 
-
         });
+
+
+
+        return;
+
 
 
     }
@@ -496,7 +422,6 @@ async interaction => {
 
 
 
-
     }catch(error){
 
 
@@ -507,37 +432,33 @@ async interaction => {
 
 
 
-        if(interaction.replied || interaction.deferred){
+        if(!interaction.replied){
 
 
 
-            return;
+            await interaction.reply({
+
+
+                content:
+
+                mensagens.erro,
+
+
+                ephemeral:true
+
+
+
+            });
+
 
 
         }
 
 
 
-
-
-        await interaction.reply({
-
-
-
-            content:
-
-            mensagens.erro,
-
-
-
-            ephemeral:true
-
-
-
-        });
-
-
     }
+
+
 
 
 
@@ -576,8 +497,6 @@ error=>{
 }
 
 );
-
-
 
 
 
