@@ -218,25 +218,14 @@ xp
 
 
 
-await EventoMundo.registrarEvento(
+
+const falaMundo = await EventoMundo.matouMonstro(
 
 personagem_id,
 
-"combate",
+monstro,
 
-`Derrotou ${monstro}.`,
-
-nivel === "dragao" ? 100 : 20,
-
-{
-
-respeito:
-nivel === "dragao" ? 50 : 5,
-
-interesse:
-nivel === "dragao" ? 30 : 5
-
-}
+nivel
 
 );
 
@@ -254,18 +243,31 @@ await interaction.reply(
 
 
 Monstro:
+
 ${monstro}
 
 
+
 XP recebido:
+
 ${xp}
 
 
+
 Nível atual:
+
 ${resultado.nivel}
 
 
+
 ${resultado.subiu ? "🌟 Você evoluiu!" : ""}
+
+
+
+🌍 **O Mundo diz:**
+
+
+"${falaMundo}"
 
 `
 
