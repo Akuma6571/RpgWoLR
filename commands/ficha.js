@@ -97,7 +97,187 @@ module.exports = {
 
 
 
-        const texto = Ficha.formatar(
+        const texto = Ficha.formatar(formatar(ficha){
+
+
+    const p = ficha.personagem;
+
+    const a = ficha.atributos;
+
+    const ap = ficha.aptidoes;
+
+
+
+    let texto = `
+
+🌍 **${p.titulo}**
+
+━━━━━━━━━━━━━━
+
+
+👤 **Nome:** ${p.nome}
+
+🎂 **Idade:** ${p.idade}
+
+📏 **Altura:** ${p.altura} cm
+
+
+🧬 **Raça:** ${p.raca}
+
+⚔️ **Classe:** ${p.classe}
+
+✨ **Subclasse:** ${p.subclasse}
+
+
+━━━━━━━━━━━━━━
+
+
+📈 **Nível:** ${p.nivel}
+
+⭐ **XP:** ${p.xp}/${p.xp_proximo}
+
+
+━━━━━━━━━━━━━━
+
+
+❤️ **Vida:** ${a.vida} | 🛡️ **Resistência:** ${a.resistencia}
+
+
+💪 **Força:** ${a.forca} | 🏃 **Agilidade:** ${a.agilidade}
+
+
+🔥 **Estamina:** ${a.estamina} | 🔮 **Mana:** ${a.mana}
+
+
+🧠 **Inteligência:** ${a.inteligencia} | 🎭 **Carisma:** ${a.carisma}
+
+
+🌌 **Aura:** ${a.aura} | 🍀 **Sorte:** ${a.sorte}
+
+
+🎯 **Chance Crítica:** ${a.chance_critica}%
+
+
+━━━━━━━━━━━━━━
+
+
+✨ **APTIDÕES**
+
+
+🔮 Mágica: ${ap.magica}%
+
+🔥 Fogo: ${ap.fogo}%
+
+🌎 Terra: ${ap.terra}%
+
+🌪️ Ar: ${ap.ar}%
+
+💧 Água: ${ap.agua}%
+
+☀️ Luz: ${ap.luz}%
+
+🌑 Escuridão: ${ap.escuridao}%
+
+✨ Secundárias: ${ap.secundarias}%
+
+
+━━━━━━━━━━━━━━
+
+
+📖 **MAGIAS**
+
+`;
+
+
+
+    if(
+
+        ficha.magias.length === 0
+
+    ){
+
+        texto += "Nenhuma\n";
+
+
+    }else{
+
+
+        ficha.magias.forEach(magia => {
+
+
+            texto +=
+
+            `• ${magia.nome} (${magia.xp} XP)\n`;
+
+
+        });
+
+
+    }
+
+
+
+
+
+    texto += `
+
+
+━━━━━━━━━━━━━━
+
+
+⚔️ **HABILIDADES**
+
+`;
+
+
+
+
+
+    if(
+
+        ficha.habilidades.length === 0
+
+    ){
+
+        texto += "Nenhuma\n";
+
+
+    }else{
+
+
+        ficha.habilidades.forEach(habilidade => {
+
+
+            texto +=
+
+            `• ${habilidade.nome} (${habilidade.xp} XP)\n`;
+
+
+        });
+
+
+    }
+
+
+
+
+
+    texto += `
+
+
+━━━━━━━━━━━━━━
+
+
+🌍 *"Toda existência possui uma história. Algumas apenas são mais interessantes de observar."*
+
+`;
+
+
+
+    return texto;
+
+
+}
 
             dados
 
