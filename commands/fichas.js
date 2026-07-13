@@ -3,7 +3,7 @@ const {
     EmbedBuilder
 } = require("discord.js");
 
-const db = require("../Database/database");
+const db = require("../database/database");
 
 
 module.exports = {
@@ -62,14 +62,11 @@ module.exports = {
 
             const ficha = new EmbedBuilder()
 
-
                 .setTitle(
                     `📜 Ficha de ${player.nome}`
                 )
 
-
                 .setColor("#8B0000")
-
 
                 .addFields(
 
@@ -161,11 +158,37 @@ module.exports = {
 
 
 
-            await interaction.reply({
+            const mensagem = await interaction.reply({
 
-                embeds: [ficha]
+                embeds: [ficha],
+
+                fetchReply: true
 
             });
+
+
+
+            await db.query(
+
+                `
+
+                UPDATE jogadores
+
+                SET mensagem_ficha = $1
+
+                WHERE id = $2
+
+                `,
+
+                [
+
+                    mensagem.id,
+
+                    userId
+
+                ]
+
+            );
 
 
 
