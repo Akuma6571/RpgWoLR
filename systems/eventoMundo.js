@@ -1,6 +1,8 @@
 const MundoRelacao = require("./mundoRelacao");
 
-const reacaoMundo = require("./reacaoMundo");
+const ReacaoMundo = require("./reacaoMundo");
+
+
 
 
 
@@ -14,11 +16,9 @@ descricao,
 
 importancia,
 
-alteracoes={}
+alteracoes = {}
 
 ){
-
-
 
 
 
@@ -35,7 +35,7 @@ personagem_id
 
 
 
-// Altera relação
+// Altera relação do Mundo com o personagem
 
 for(const campo in alteracoes){
 
@@ -60,8 +60,7 @@ alteracoes[campo]
 
 
 
-
-// Cria memória
+// Cria memória do acontecimento
 
 await MundoRelacao.registrarMemoria(
 
@@ -74,6 +73,14 @@ descricao,
 importancia
 
 );
+
+
+
+
+
+
+
+// Faz o Mundo reagir ao acontecimento
 
 const fala = await ReacaoMundo.reagirEvento(
 
@@ -93,7 +100,17 @@ relacao: alteracoes
 
 );
 
+
+
+
+
+
+return fala;
+
+
+
 }
+
 
 
 
@@ -131,7 +148,7 @@ if(nivel === "dragao") respeito = 50;
 
 
 
-await registrarEvento(
+return await registrarEvento(
 
 personagem_id,
 
@@ -145,7 +162,7 @@ respeito,
 
 respeito: respeito,
 
-interesse: Math.floor(respeito/2)
+interesse: Math.floor(respeito / 2)
 
 }
 
@@ -162,6 +179,7 @@ interesse: Math.floor(respeito/2)
 
 
 
+
 async function morreu(
 
 personagem_id
@@ -170,7 +188,7 @@ personagem_id
 
 
 
-await registrarEvento(
+return await registrarEvento(
 
 personagem_id,
 
@@ -199,6 +217,7 @@ curiosidade: 5
 
 
 
+
 async function evoluiu(
 
 personagem_id,
@@ -209,7 +228,7 @@ formaNova
 
 
 
-await registrarEvento(
+return await registrarEvento(
 
 personagem_id,
 
@@ -240,6 +259,7 @@ respeito: 10
 
 
 
+
 async function aprendeuMagia(
 
 personagem_id,
@@ -250,7 +270,7 @@ magia
 
 
 
-await registrarEvento(
+return await registrarEvento(
 
 personagem_id,
 
@@ -271,6 +291,7 @@ curiosidade: 5
 
 
 }
+
 
 
 
