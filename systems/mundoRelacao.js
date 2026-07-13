@@ -7,6 +7,7 @@ const database = require("../database/database");
 async function criarRelacao(personagem_id){
 
 
+
 const existe = await database.buscarUm(
 
 `
@@ -29,7 +30,10 @@ personagem_id
 
 
 
+
+
 if(!existe){
+
 
 
 await database.executar(
@@ -59,20 +63,30 @@ personagem_id
 );
 
 
-}
-
-
 
 }
 
 
 
+}
 
 
 
 
 
-async function alterarRelacao(personagem_id, campo, valor){
+
+
+
+
+async function alterarRelacao(
+
+personagem_id,
+
+campo,
+
+valor
+
+){
 
 
 
@@ -102,18 +116,20 @@ const permitidos = [
 
 
 
+
 if(!permitidos.includes(campo)){
+
 
 
 throw new Error(
 
-"Campo de relação inválido."
+`Campo de relação inválido: ${campo}`
 
 );
 
 
-}
 
+}
 
 
 
@@ -154,6 +170,97 @@ personagem_id
 
 
 
+async function alterarAfinidade(
+
+personagem_id,
+
+afinidade
+
+){
+
+
+
+const valoresPermitidos = [
+
+"hostil",
+
+"desconfiado",
+
+"neutro",
+
+"favoravel",
+
+"aliado"
+
+];
+
+
+
+
+
+
+if(!valoresPermitidos.includes(afinidade)){
+
+
+
+throw new Error(
+
+"Valor de afinidade inválido."
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+await criarRelacao(personagem_id);
+
+
+
+
+
+
+
+await database.executar(
+
+`
+
+UPDATE mundo_personagem
+
+SET afinidade=$1
+
+WHERE personagem_id=$2
+
+`,
+
+[
+
+afinidade,
+
+personagem_id
+
+]
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
 async function registrarMemoria(
 
 personagem_id,
@@ -165,6 +272,14 @@ descricao,
 importancia=1
 
 ){
+
+
+
+if(importancia < 1){
+
+importancia = 1;
+
+}
 
 
 
@@ -219,6 +334,7 @@ importancia
 
 
 
+
 async function adicionarInterferencia(
 
 personagem_id
@@ -240,6 +356,7 @@ personagem_id,
 
 
 }
+
 
 
 
@@ -279,6 +396,7 @@ valor
 
 
 
+
 async function aumentarRespeito(
 
 personagem_id,
@@ -310,6 +428,7 @@ valor
 
 
 
+
 module.exports = {
 
 
@@ -317,6 +436,8 @@ module.exports = {
 criarRelacao,
 
 alterarRelacao,
+
+alterarAfinidade,
 
 registrarMemoria,
 
