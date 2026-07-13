@@ -1,6 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
-
-const Mundo = require("../systems/mundo");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 const database = require("../database/database");
 
@@ -14,12 +12,13 @@ const DONO_ID = process.env.DONO_ID;
 module.exports = {
 
 
+
 data: new SlashCommandBuilder()
 
 .setName("mundo")
 
 .setDescription(
-"Mostra a relação do Mundo com um jogador."
+"Mostra a relação do Mundo com um personagem."
 )
 
 .addIntegerOption(option =>
@@ -52,7 +51,7 @@ return interaction.reply({
 
 content:
 
-"❌ Apenas o mestre pode usar esse comando.",
+"❌ Apenas o mestre pode acessar a visão do Mundo.",
 
 ephemeral:true
 
@@ -109,7 +108,7 @@ return interaction.reply({
 
 content:
 
-"❌ Esse personagem não possui relação com o Mundo.",
+"❌ Esse personagem ainda não possui uma relação registrada com o Mundo.",
 
 ephemeral:true
 
@@ -154,11 +153,42 @@ id
 
 
 
+const personagem = await database.buscarUm(
+
+`
+
+SELECT *
+
+FROM personagens
+
+WHERE id=$1
+
+`,
+
+[
+
+id
+
+]
+
+);
+
+
+
+
+
+
+
 let texto = `
 
 🌍 **Relação do Mundo**
 
-━━━━━━━━━━━━
+━━━━━━━━━━━━━━
+
+
+👤 Personagem:
+
+${personagem ? personagem.nome : "Desconhecido"}
 
 
 👁 Interesse:
@@ -181,7 +211,7 @@ ${relacao.afinidade}
 ${relacao.segredo || "Nenhum registrado"}
 
 
-━━━━━━━━━━━━
+━━━━━━━━━━━━━━
 
 
 🧠 Memórias importantes:
@@ -197,7 +227,7 @@ ${relacao.segredo || "Nenhum registrado"}
 if(memorias.length === 0){
 
 
-texto += "Nenhuma memória.";
+texto += "Nenhuma memória registrada.";
 
 
 }else{
@@ -212,7 +242,7 @@ texto +=
 
 • ${m.evento}
 
-${m.comentario}
+"${m.comentario}"
 
 `;
 
@@ -228,9 +258,24 @@ ${m.comentario}
 
 
 
+
+const embed = new EmbedBuilder()
+
+.setTitle("🌍 Visão do Mundo")
+
+.setDescription(texto)
+
+.setTimestamp();
+
+
+
+
+
+
+
 await interaction.reply({
 
-content:texto,
+embeds:[embed],
 
 ephemeral:true
 
