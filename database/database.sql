@@ -302,3 +302,39 @@ CREATE TABLE logs_admin (
     criado_em TIMESTAMP DEFAULT NOW()
 
 );
+-- ==========================================
+-- TABELA DE EVENTOS DO MUNDO
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS eventos (
+
+    id BIGSERIAL PRIMARY KEY,
+
+    tipo VARCHAR(100) NOT NULL,
+
+    personagem_id BIGINT,
+
+    usuario_id VARCHAR(50),
+
+    servidor_id VARCHAR(50),
+
+    dados JSONB NOT NULL,
+
+    criado_em TIMESTAMP NOT NULL DEFAULT NOW()
+
+);
+
+CREATE INDEX IF NOT EXISTS idx_eventos_tipo
+ON eventos(tipo);
+
+CREATE INDEX IF NOT EXISTS idx_eventos_personagem
+ON eventos(personagem_id);
+
+CREATE INDEX IF NOT EXISTS idx_eventos_usuario
+ON eventos(usuario_id);
+
+CREATE INDEX IF NOT EXISTS idx_eventos_servidor
+ON eventos(servidor_id);
+
+CREATE INDEX IF NOT EXISTS idx_eventos_data
+ON eventos(criado_em DESC);
