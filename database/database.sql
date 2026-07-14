@@ -36,19 +36,15 @@ CREATE TABLE personagens (
     jogador_id INTEGER REFERENCES jogadores(id)
     ON DELETE CASCADE,
 
-
     slot INTEGER NOT NULL,
-
 
     nome VARCHAR(100),
 
     titulo VARCHAR(100),
 
-
     idade INTEGER,
 
     altura INTEGER,
-
 
     raca VARCHAR(50),
 
@@ -56,20 +52,15 @@ CREATE TABLE personagens (
 
     subclasse VARCHAR(50),
 
-
-
     nivel BIGINT DEFAULT 1,
 
     xp BIGINT DEFAULT 0,
-
 
     mensagem_ficha VARCHAR(30),
 
     canal_ficha VARCHAR(30),
 
-
     ativo BOOLEAN DEFAULT TRUE,
-
 
     criado_em TIMESTAMP DEFAULT NOW()
 
@@ -86,7 +77,6 @@ CREATE TABLE atributos (
     personagem_id INTEGER PRIMARY KEY
     REFERENCES personagens(id)
     ON DELETE CASCADE,
-
 
     vida BIGINT DEFAULT 0,
 
@@ -108,7 +98,6 @@ CREATE TABLE atributos (
 
     sorte BIGINT DEFAULT 0,
 
-
     chance_critica BIGINT DEFAULT 0
 
 );
@@ -124,7 +113,6 @@ CREATE TABLE aptidoes (
     personagem_id INTEGER PRIMARY KEY
     REFERENCES personagens(id)
     ON DELETE CASCADE,
-
 
     magica INTEGER DEFAULT 0,
 
@@ -154,16 +142,12 @@ CREATE TABLE habilidades (
 
     id SERIAL PRIMARY KEY,
 
-
     personagem_id INTEGER REFERENCES personagens(id)
     ON DELETE CASCADE,
 
-
     nome VARCHAR(100) NOT NULL,
 
-
     descricao TEXT,
-
 
     nivel INTEGER DEFAULT 1
 
@@ -179,22 +163,16 @@ CREATE TABLE magias (
 
     id SERIAL PRIMARY KEY,
 
-
     personagem_id INTEGER REFERENCES personagens(id)
     ON DELETE CASCADE,
 
-
     nome VARCHAR(100) NOT NULL,
 
-
     descricao TEXT,
-
 
     nivel INTEGER DEFAULT 1
 
 );
-
-
 
 -- ==========================================
 -- MEMÓRIA DO MUNDO
@@ -204,23 +182,17 @@ CREATE TABLE memorias_mundo (
 
     id SERIAL PRIMARY KEY,
 
-
     jogador_id INTEGER REFERENCES jogadores(id)
     ON DELETE CASCADE,
-
 
     personagem_id INTEGER REFERENCES personagens(id)
     ON DELETE CASCADE,
 
-
     tipo VARCHAR(50),
-
 
     descricao TEXT NOT NULL,
 
-
     importancia INTEGER DEFAULT 1,
-
 
     criado_em TIMESTAMP DEFAULT NOW()
 
@@ -236,22 +208,16 @@ CREATE TABLE combates (
 
     id SERIAL PRIMARY KEY,
 
-
     personagem_id INTEGER REFERENCES personagens(id)
     ON DELETE CASCADE,
 
-
     alvo VARCHAR(100) NOT NULL,
-
 
     raridade VARCHAR(50),
 
-
     resultado VARCHAR(30),
 
-
     xp_recebido BIGINT DEFAULT 0,
-
 
     criado_em TIMESTAMP DEFAULT NOW()
 
@@ -267,16 +233,12 @@ CREATE TABLE rolamentos (
 
     id SERIAL PRIMARY KEY,
 
-
     jogador_id INTEGER REFERENCES jogadores(id)
     ON DELETE CASCADE,
 
-
     dado BIGINT NOT NULL,
 
-
     resultado BIGINT NOT NULL,
-
 
     criado_em TIMESTAMP DEFAULT NOW()
 
@@ -292,27 +254,27 @@ CREATE TABLE logs_admin (
 
     id SERIAL PRIMARY KEY,
 
-
     comando VARCHAR(100),
 
-
     descricao TEXT,
-
 
     criado_em TIMESTAMP DEFAULT NOW()
 
 );
+
 -- ==========================================
--- TABELA DE EVENTOS DO MUNDO
+-- EVENTOS DO MUNDO
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS eventos (
+CREATE TABLE eventos (
 
     id BIGSERIAL PRIMARY KEY,
 
     tipo VARCHAR(100) NOT NULL,
 
-    personagem_id BIGINT,
+    personagem_id INTEGER
+    REFERENCES personagens(id)
+    ON DELETE SET NULL,
 
     usuario_id VARCHAR(50),
 
@@ -320,21 +282,27 @@ CREATE TABLE IF NOT EXISTS eventos (
 
     dados JSONB NOT NULL,
 
-    criado_em TIMESTAMP NOT NULL DEFAULT NOW()
+    criado_em TIMESTAMP DEFAULT NOW()
 
 );
 
-CREATE INDEX IF NOT EXISTS idx_eventos_tipo
+
+
+-- ==========================================
+-- ÍNDICES
+-- ==========================================
+
+CREATE INDEX idx_eventos_tipo
 ON eventos(tipo);
 
-CREATE INDEX IF NOT EXISTS idx_eventos_personagem
+CREATE INDEX idx_eventos_personagem
 ON eventos(personagem_id);
 
-CREATE INDEX IF NOT EXISTS idx_eventos_usuario
+CREATE INDEX idx_eventos_usuario
 ON eventos(usuario_id);
 
-CREATE INDEX IF NOT EXISTS idx_eventos_servidor
+CREATE INDEX idx_eventos_servidor
 ON eventos(servidor_id);
 
-CREATE INDEX IF NOT EXISTS idx_eventos_data
+CREATE INDEX idx_eventos_data
 ON eventos(criado_em DESC);
