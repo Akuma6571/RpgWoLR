@@ -1,226 +1,131 @@
-// ==========================================
-// 🌍 O MUNDO BOT V2
-// SISTEMA DEFINITIVO DE EVENTOS
-// ==========================================
+class SistemaEventos {
+    constructor() {
+        this.eventos = new Map();
+    }
 
-const database = require("../../database/database");
+    criar(nome, dados = {}) {
+        if (this.eventos.has(nome)) {
+            return {
+                sucesso: false,
+                mensagem: "Este evento já existe."
+            };
+        }
 
+        const evento = {
+            nome,
+            ativo: false,
+            criadoEm: new Date(),
+            iniciadoEm: null,
+            encerradoEm: null,
+            participantes: [],
+            ...dados
+        };
 
+        this.eventos.set(nome, evento);
 
-// ==========================================
-// REGISTRAR EVENTO
-// ==========================================
+        return {
+            sucesso: true,
+            evento
+        };
+    }
 
-async function registrar(tipo, dados = {}){
+    iniciar(nome) {
+        const evento = this.eventos.get(nome);
 
-    return await database.buscarUm(
+        if (!evento) {
+            return {
+                sucesso: false,
+                mensagem: "Evento não encontrado."
+            };
+        }
 
-`
-INSERT INTO eventos
-(
-tipo,
-personagem_id,
-usuario_id,
-servidor_id,
-dados
-)
+        evento.ativo = true;
+        evento.iniciadoEm = new Date();
 
-VALUES
-(
-$1,$2,$3,$4,$5
-)
+        return {
+            sucesso: true,
+            evento
+        };
+    }
 
-RETURNING *
-`,
+    encerrar(nome) {
+        const evento = this.eventos.get(nome);
 
-[
-    tipo,
-    dados.personagem_id || null,
-    dados.usuario_id || null,
-    dados.servidor || dados.servidor_id || null,
-    dados
-]
+        if (!evento) {
+            return {
+                sucesso: false,
+                mensagem: "Evento não encontrado."
+            };
+        }
 
-    );
+        evento.ativo = false;
+        evento.encerradoEm = new Date();
 
+        return {
+            sucesso: true,
+            evento
+        };
+    }
+
+    adicionarParticipante(nome, jogadorId) {
+        const evento = this.eventos.get(nome);
+
+        if (!evento) {
+            return {
+                sucesso: false,
+                mensagem: "Evento não encontrado."
+            };
+        }
+
+        if (!evento.participantes.includes(jogadorId)) {
+            evento.participantes.push(jogadorId);
+        }
+
+        return {
+            sucesso: true,
+            evento
+        };
+    }
+
+    removerParticipante(nome, jogadorId) {
+        const evento = this.eventos.get(nome);
+
+        if (!evento) {
+            return {
+                sucesso: false,
+                mensagem: "Evento não encontrado."
+            };
+        }
+
+        evento.participantes = evento.participantes.filter(
+            id => id !== jogadorId
+        );
+
+        return {
+            sucesso: true,
+            evento
+        };
+    }
+
+    buscar(nome) {
+        return this.eventos.get(nome) || null;
+    }
+
+    listar() {
+        return [...this.eventos.values()];
+    }
+
+    listarAtivos() {
+        return [...this.eventos.values()].filter(evento => evento.ativo);
+    }
+
+    excluir(nome) {
+        return this.eventos.delete(nome);
+    }
+
+    limpar() {
+        this.eventos.clear();
+    }
 }
 
-
-
-// ==========================================
-// BUSCAR POR ID
-// ==========================================
-
-async function buscar(id){
-
-    return await database.buscarUm(
-
-`
-SELECT *
-
-FROM eventos
-
-WHERE id = $1
-
-LIMIT 1
-`,
-
-[id]
-
-    );
-
-}
-
-
-
-// ==========================================
-// BUSCAR POR TIPO
-// ==========================================
-
-async function buscarPorTipo(tipo, limite = 100){
-
-    return await database.buscarTodos(
-
-`
-SELECT *
-
-FROM eventos
-
-WHERE tipo = $1
-
-ORDER BY criado_em DESC
-
-LIMIT $2
-`,
-
-[tipo, limite]
-
-    );
-
-}
-
-
-
-// ==========================================
-// BUSCAR POR PERSONAGEM
-// ==========================================
-
-async function buscarPorPersonagem(personagemId){
-
-    return await database.buscarTodos(
-
-`
-SELECT *
-
-FROM eventos
-
-WHERE personagem_id = $1
-
-ORDER BY criado_em DESC
-`,
-
-[personagemId]
-
-    );
-
-}
-
-
-
-// ==========================================
-// BUSCAR POR USUÁRIO
-// ==========================================
-
-async function buscarPorUsuario(usuarioId){
-
-    return await database.buscarTodos(
-
-`
-SELECT *
-
-FROM eventos
-
-WHERE usuario_id = $1
-
-ORDER BY criado_em DESC
-`,
-
-[usuarioId]
-
-    );
-
-}
-
-
-
-// ==========================================
-// ÚLTIMOS EVENTOS
-// ==========================================
-
-async function ultimos(limite = 100){
-
-    return await database.buscarTodos(
-
-`
-SELECT *
-
-FROM eventos
-
-ORDER BY criado_em DESC
-
-LIMIT $1
-`,
-
-[limite]
-
-    );
-
-}
-
-
-
-// ==========================================
-// REMOVER EVENTO
-// ==========================================
-
-async function remover(id){
-
-    return await database.buscarUm(
-
-`
-DELETE FROM eventos
-
-WHERE id = $1
-
-RETURNING *
-`,
-
-[id]
-
-    );
-
-}
-
-
-
-// ==========================================
-// EXPORTAÇÃO
-// ==========================================
-
-module.exports = {
-
-    registrar,
-
-    buscar,
-
-    buscarPorTipo,
-
-    buscarPorPersonagem,
-
-    buscarPorUsuario,
-
-    ultimos,
-
-    remover
-
-};
+module.exports = new SistemaEventos();
