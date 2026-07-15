@@ -1,386 +1,58 @@
-// ==========================================
-// 🌍 O MUNDO BOT V2
-// SISTEMA DEFINITIVO DE BANCO DE DADOS
-// PostgreSQL
-// ==========================================
-
-
 const { Pool } = require("pg");
-const dotenv = require("dotenv");
-
-
-
-dotenv.config();
-
-
-
-
-// ==========================================
-// CONFIGURAÇÃO DO POOL
-// ==========================================
-
 
 const pool = new Pool({
-
     host: process.env.DB_HOST,
-
     port: process.env.DB_PORT,
-
+    database: process.env.DB_NAME,
     user: process.env.DB_USER,
-
     password: process.env.DB_PASSWORD,
-
-    database: process.env.DB_DATABASE,
-
-
     max: 20,
-
-
     idleTimeoutMillis: 30000,
-
-
     connectionTimeoutMillis: 5000
-
-
 });
 
+pool.on("error", (err) => {
+    console.error("Erro inesperado no PostgreSQL:", err);
+});
 
+async function query(text, params = []) {
+    const resultado = await pool.query(text, params);
+    return resultado;
+}
 
+async function transaction(callback) {
+    const client = await pool.connect();
 
+    try {
+        await client.query("BEGIN");
 
-// ==========================================
-// MONITORAMENTO DA CONEXÃO
-// ==========================================
+        const resultado = await callback(client);
 
-
-pool.on(
-
-    "connect",
-
-    () => {
-
-        console.log(
-            "🌍 Conexão PostgreSQL estabelecida."
-        );
-
-    }
-
-);
-
-
-
-
-pool.on(
-
-    "error",
-
-    (erro) => {
-
-
-        console.error(
-            "❌ Erro inesperado no PostgreSQL:"
-        );
-
-
-        console.error(erro);
-
-
-    }
-
-);
-
-
-
-
-
-
-
-// ==========================================
-// EXECUTAR COMANDOS
-// INSERT / UPDATE / DELETE
-// ==========================================
-
-
-async function executar(
-
-    query,
-
-    valores = []
-
-){
-
-
-    const cliente = await pool.connect();
-
-
-    try{
-
-
-        const resultado = await cliente.query(
-
-            query,
-
-            valores
-
-        );
-
+        await client.query("COMMIT");
 
         return resultado;
 
+    } catch (erro) {
 
-
-    }finally{
-
-
-        cliente.release();
-
-
-    }
-
-
-}
-
-
-
-
-
-
-
-// ==========================================
-// BUSCAR UM REGISTRO
-// ==========================================
-
-
-async function buscarUm(
-
-    query,
-
-    valores = []
-
-){
-
-
-    const cliente = await pool.connect();
-
-
-    try{
-
-
-        const resultado = await cliente.query(
-
-            query,
-
-            valores
-
-        );
-
-
-        return resultado.rows[0] || null;
-
-
-
-    }finally{
-
-
-        cliente.release();
-
-
-    }
-
-
-}
-
-
-
-
-
-
-
-
-// ==========================================
-// BUSCAR VÁRIOS REGISTROS
-// ==========================================
-
-
-async function buscarTodos(
-
-    query,
-
-    valores = []
-
-){
-
-
-    const cliente = await pool.connect();
-
-
-    try{
-
-
-        const resultado = await cliente.query(
-
-            query,
-
-            valores
-
-        );
-
-
-        return resultado.rows;
-
-
-
-    }finally{
-
-
-        cliente.release();
-
-
-    }
-
-
-}
-
-
-
-
-
-
-
-
-// ==========================================
-// TRANSAÇÕES
-// Usado para ações importantes
-// Ex:
-// Dar XP + subir nível + criar memória
-// ==========================================
-
-
-async function transacao(
-
-    comandos
-
-){
-
-
-    const cliente = await pool.connect();
-
-
-
-    try{
-
-
-        await cliente.query(
-            "BEGIN"
-        );
-
-
-
-        const resultados = [];
-
-
-
-        for(const comando of comandos){
-
-
-            const resultado = await cliente.query(
-
-                comando.query,
-
-                comando.valores || []
-
-            );
-
-
-            resultados.push(resultado);
-
-
-        }
-
-
-
-        await cliente.query(
-            "COMMIT"
-        );
-
-
-
-        return resultados;
-
-
-
-    }catch(erro){
-
-
-        await cliente.query(
-            "ROLLBACK"
-        );
-
-
+        await client.query("ROLLBACK");
         throw erro;
 
+    } finally {
 
-
-    }finally{
-
-
-        cliente.release();
-
+        client.release();
 
     }
-
-
 }
 
-
-
-
-
-
-
-
-// ==========================================
-// FECHAR BANCO
-// Usado quando o bot desligar
-// ==========================================
-
-
-async function fecharBanco(){
-
-
-    await pool.end();
-
-
+async function conectar() {
+    const client = await pool.connect();
+    client.release();
+    console.log("PostgreSQL conectado.");
 }
-
-
-
-
-
-
-
-
-// ==========================================
-// EXPORTAÇÃO
-// ==========================================
-
 
 module.exports = {
-
-
-    executar,
-
-
-    buscarUm,
-
-
-    buscarTodos,
-
-
-    transacao,
-
-
-    fecharBanco
-
-
+    pool,
+    query,
+    transaction,
+    conectar
 };
