@@ -1,4 +1,4 @@
-const { parseAndRoll, rollD20 } = require('./utils/dice');
+const { parseAndRoll, rollD20 } = require('./utils/dados');
 const { commentOnRoll, commentOnDamage, commentOnHeal, randomInterjection } = require('./utils/narrator');
 const { loadGuild, saveGuild } = require('./utils/storage');
 
