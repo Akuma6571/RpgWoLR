@@ -11,7 +11,7 @@ for (const file of fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'))) 
   if (cmd.data) commands.push(cmd.data.toJSON());
 }
 
-const rest = new REST({ version: '10' }).settoken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).settoken(process.env.MTUyNTY3MTYyNjMyMTAzOTQ3Mg.GFqbbD.hCw-t5hd_dVLWwBrrjmMsfsa3ElTB8zpW2H_Dc);
 
 (async () => {
   try {
