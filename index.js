@@ -24,8 +24,14 @@ for (const file of fs.readdirSync(commandsPath).filter(file => file.endsWith('.j
   if (command.data && command.execute) client.commands.set(command.data.name, command);
 }
 
-client.once(Events.ClientReady, c => {
+client.once(Events.ClientReady, async c => {
   console.log(`✦ O Mundo despertou. Logado como ${c.user.tag}.`);
+  try {
+    await c.application.commands.set([...client.commands.values()].map(command => command.data.toJSON()), process.env.GUILD_ID || undefined);
+    console.log(`✦ ${client.commands.size} comandos registrados.`);
+  } catch (error) {
+    console.error('✦ Não foi possível registrar os comandos:', error.message);
+  }
 });
 
 client.on(Events.InteractionCreate, async interaction => {
