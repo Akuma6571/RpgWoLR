@@ -1,0 +1,1 @@
+module.exports = { data: null, execute: async interaction => interaction.reply('ok') };
