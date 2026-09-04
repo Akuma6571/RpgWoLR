@@ -1,7 +1,7 @@
 {
   "name": "o-mundo-rpg-bot",
-  "version": "1.0.0",
-  "description": "Bot de Discord para um sistema de RPG próprio. O mestre é 'O mundo', uma divindade debochada e irritante.",
+  "version": "2.0.0",
+  "description": "Bot mínimo de Discord para o RPG: O Mundo apenas fala quando o mestre manda e rola dados.",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.2"
+    "dotenv": "^16.4.5"
   }
 }
