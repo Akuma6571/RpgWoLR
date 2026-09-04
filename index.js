@@ -1,7 +1,17 @@
+const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, Events } = require('discord.js');
 require('dotenv').config();
+
+const PORT = Number(process.env.PORT || 10000);
+const healthServer = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('O Mundo está ativo.');
+});
+healthServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`✦ Servidor de verificação ativo na porta ${PORT}.`);
+});
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -34,4 +44,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 if (!process.env.DISCORD_TOKEN) throw new Error('DISCORD_TOKEN não configurado.');
-client.login(process.env.DISCORD_TOKEN);
+
+client.login(process.env.DISCORD_TOKEN).catch(error => {
+  console.error('✦ Não foi possível conectar o O Mundo ao Discord:', error.message);
+});
