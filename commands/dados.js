@@ -13,9 +13,18 @@ function roll(expression) {
 }
 
 function comment(value, sides) {
-  if (sides !== 20 || crypto.randomInt(0, 100) >= 20) return null;
-  if (value === 1) return crypto.randomInt(0, 2) === 0 ? 'Previsível.' : 'Era isso que você tinha para oferecer?';
+  if (sides !== 20) return null;
+  let chance;
+  if (value === 1) chance = 0.8;
+  else if (value <= 5) chance = 0.3;
+  else if (value <= 14) chance = 0.05;
+  else if (value <= 19) chance = 0.3;
+  else chance = 0.8;
+  if (Math.random() > chance) return null;
+
+  if (value === 1) return Math.random() < 0.5 ? 'Previsível.' : 'Era isso que você tinha para oferecer?';
   if (value === 2) return 'Interessante. Não confunda isso com elogio.';
+  if (value === 19) return 'Aceitável.';
   if (value === 20) return 'O acaso, desta vez, foi útil.';
   return null;
 }
